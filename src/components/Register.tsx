@@ -79,7 +79,7 @@ const RegisterPage: React.FC = () => {
         });
     };
 
-    const onSubmitEnrollment = async(e:any, data:any) => {
+    const onSubmitEnrollment = async (e: any, data: any) => {
         e.preventDefault();
         console.log('Enrollment Submitted:', data);
         let enrollurl = config.apiUrl + '/enroll/enroll';
@@ -88,17 +88,18 @@ const RegisterPage: React.FC = () => {
         let formdata = new URLSearchParams(data.administration).toString();
         console.log('formdata=', formdata)
         await fetch(enrollurl, {
-            method:'POST',
-            body:formdata, 
+            method: 'POST',
+            body: formdata,
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
             }
-        }) 
-        .then(response => response.json()) // assuming the server returns a JSON response
-        .then(data => { console.log(data)
-            navigate('/success');
-         })
-        .catch(error => console.error('Error:', error));
+        })
+            .then(response => response.json()) // assuming the server returns a JSON response
+            .then(data => {
+                console.log(data)
+                navigate('/success');
+            })
+            .catch(error => console.error('Error:', error));
     }
 
     return (
@@ -117,7 +118,7 @@ const RegisterPage: React.FC = () => {
                                     <label className="block text-sm font-medium text-gray-700">
                                         Organization Name <span className="text-red-500">*</span>
                                     </label>
-                                    <input id="payer_name" 
+                                    <input id="payer_name"
                                         {...register('payer_name', {
                                             required: 'Organization Name is required',
                                             pattern: {
