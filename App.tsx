@@ -15,7 +15,7 @@ import LoginPage from './components/LoginPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import RegisterPage from './components/Register';
 import CertificateUploadPage from './components/CertificateUpload2';
-
+import Activation from './components/Activation'
 
 
 

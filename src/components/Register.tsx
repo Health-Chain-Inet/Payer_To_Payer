@@ -97,7 +97,7 @@ const RegisterPage: React.FC = () => {
             .then(response => response.json()) // assuming the server returns a JSON response
             .then(data => {
                 console.log(data)
-                if (data.status == 200) {
+                if (data.success == true) {
                     navigate('/success');
                 }
                 else {

@@ -16,6 +16,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import RegisterPage from './components/Register';
 import CertificateUploadPage from './components/CertificateUpload2';
 import SuccessMessage from './components/SuccessMessage';
+import Activation from './components/Activation';
 
 // Mock user for demonstration purposes
 const mockUser = {
@@ -53,6 +54,8 @@ export default function App() {
         </Route>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/certificate" element={<CertificateUploadPage />} />
+        <Route path="/activation" element={<Activation />} />
+
         <Route path="*" element={<Navigate to="/login" replace />} />
         <Route path="/register" element={<RegisterPage />} />
 
