@@ -7,7 +7,7 @@ import { GlobalContext } from "./GlobalContext.tsx"
 const LoginPage: React.FC = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [loginerror, setLoginError] = useState('');
-     const { globalVariable, setGlobalVariable } = useContext<any>(GlobalContext);
+    const { globalVariable, setGlobalVariable } = useContext<any>(GlobalContext);
 
     const navigate = useNavigate();
     const [errors, setErrors] = useState({
@@ -136,7 +136,7 @@ const LoginPage: React.FC = () => {
                         setLoginError("");
                         navigate('/directory');
                     }
-                    else{
+                    else {
                         setLoginError("Invalid Username or Password");
                     }
 
@@ -175,15 +175,15 @@ const LoginPage: React.FC = () => {
                         <form onSubmit={handleLogin} className="space-y-4">
 
                             <div className="relative">
-                                <label htmlFor="username" className="flex items-center">
-                                    Username
+                                <label htmlFor="email" className="flex items-center">
+                                    Email
                                     <span className="text-red-500 ml-1">*</span>
                                 </label>
                                 <input
-                                    type="text"
-                                    id="username"
+                                    type="email"
+                                    id="email"
                                     name="username"
-                                    placeholder="Username"
+                                    placeholder="Email address"
                                     value={formData.username}
                                     onChange={handleInputChange}
                                     className={`w-full px-4 py-2 border rounded focus:outline-none focus:border-[#004188] pl-8 ${errors.username ? 'border-red-500' : 'border-gray-300'
@@ -229,43 +229,55 @@ const LoginPage: React.FC = () => {
 
 
                             <div className="space-y-2">
-                                <div className="flex space-x-4">
-
-                                    <button
-                                        type="submit"
-                                        className={`flex-1 py-2 rounded transition duration-300 ${isLoading || !formData.username || !formData.password
-                                            ? 'bg-gray-400 cursor-not-allowed'
-                                            : 'bg-[#004188] hover:bg-[#003166]'
-                                            } text-white`}
-                                        disabled={isLoading || !formData.username || !formData.password}
-                                    >
-                                        {isLoading ? (
-                                            <span className="flex items-center justify-center">
-                                                <svg className="animate-spin h-5 w-5 mr-2" viewBox="0 0 24 24">
-                                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                                                </svg>
-                                                Logging in...
-                                            </span>
-                                        ) : (
-                                            'Login'
-                                        )}
-                                    </button>
-                                        
-
-                                    <span className="flex-1 text-center text-gray-600">or</span>
-
-                                    <button
-                                        type="button"
-                                        className="flex-1 bg-gray-200 text-gray-800 py-2 rounded hover:bg-gray-300 transition duration-300"
-                                        onClick={() => navigate('/register')}
-                                    >
-                                        Enroll
-                                    </button>
                                 
-                                        <label htmlFor="">{loginerror}</label>
+                                
+                                <div className="flex flex-col space-y-4">
+                                    <div className="flex space-x-4">
+                                        <button
+                                            type="submit"
+                                            className={`flex-1 py-2 rounded transition duration-300 ${isLoading || !formData.username || !formData.password
+                                                ? 'bg-gray-400 cursor-not-allowed'
+                                                : 'bg-[#004188] hover:bg-[#003166]'
+                                                } text-white`}
+                                            disabled={isLoading || !formData.username || !formData.password}
+                                        >
+                                            {isLoading ? (
+                                                <span className="flex items-center justify-center">
+                                                    <svg className="animate-spin h-5 w-5 mr-2" viewBox="0 0 24 24">
+                                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                                                    </svg>
+                                                    Logging in...
+                                                </span>
+                                            ) : (
+                                                'Login'
+                                            )}
+                                        </button>
+
+
+
+
+                                        <span className="flex-1 text-center text-gray-600">or</span>
+                                        <button
+                                            type="button"
+                                            className="flex-1 bg-gray-200 text-gray-800 py-2 rounded hover:bg-gray-300 transition duration-300"
+                                            onClick={() => navigate('/register')}
+                                        >
+                                            Enroll
+                                        </button>
+                                    </div>
+
+                                    
+                                    {loginerror && (
+                                        <div className="text-red-500 text-sm text-center">{loginerror}</div>
+                                    )}
                                 </div>
+
+
+
                             </div>
+
+
                         </form>
                     </div>
                 </div>
