@@ -1,13 +1,14 @@
 import React, { useContext, useState } from 'react';
-import Logo from '../../dist/assets/healthchain-logo.png';
+import Logo from '../../dist/assets/hclogo.png';
 import { useNavigate } from 'react-router-dom';
 import config from '../config/config.js';
 import { GlobalContext } from "./GlobalContext.tsx"
 
 const LoginPage: React.FC = () => {
     const [isLoading, setIsLoading] = useState(false);
-    const { globalVariable, setGlobalVariable } = useContext<any>(GlobalContext);
-    
+    const [loginerror, setLoginError] = useState('');
+     const { globalVariable, setGlobalVariable } = useContext<any>(GlobalContext);
+
     const navigate = useNavigate();
     const [errors, setErrors] = useState({
         username: '',
@@ -126,11 +127,18 @@ const LoginPage: React.FC = () => {
                 .then(response => response.json()) // assuming the server returns a JSON response
                 .then(data => {
                     console.log(data)
-                    localStorage.setItem('user', data.message.adm_name)
-                    localStorage.setItem('email', data.message.adm_email)
+                    if (data.status == 200) {
 
-                    setGlobalVariable({ user: localStorage.getItem('user'), email: localStorage.getItem('email') })
-                    navigate('/directory');
+                        localStorage.setItem('user', data.message.adm_name)
+                        localStorage.setItem('email', data.message.adm_email)
+
+                        setGlobalVariable({ user: localStorage.getItem('user'), email: localStorage.getItem('email') })
+                        setLoginError("");
+                        navigate('/directory');
+                    }
+                    else{
+                        setLoginError("Invalid Username or Password");
+                    }
 
                 })
                 .catch(error => console.error('Error:', error));
@@ -243,8 +251,7 @@ const LoginPage: React.FC = () => {
                                             'Login'
                                         )}
                                     </button>
-
-
+                                        
 
                                     <span className="flex-1 text-center text-gray-600">or</span>
 
@@ -255,6 +262,8 @@ const LoginPage: React.FC = () => {
                                     >
                                         Enroll
                                     </button>
+                                
+                                        <label htmlFor="">{loginerror}</label>
                                 </div>
                             </div>
                         </form>
