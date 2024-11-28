@@ -97,7 +97,12 @@ const RegisterPage: React.FC = () => {
             .then(response => response.json()) // assuming the server returns a JSON response
             .then(data => {
                 console.log(data)
-                navigate('/success');
+                if (data.status == 200) {
+                    navigate('/success');
+                }
+                else {
+                    alert("User already exists");
+                }
             })
             .catch(error => console.error('Error:', error));
     }
