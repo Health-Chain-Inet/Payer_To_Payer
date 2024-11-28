@@ -118,17 +118,17 @@ const RegisterPage: React.FC = () => {
                             <h2 className="text-lg font-semibold text-gray-800 mb-4">Organization Details</h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700">
                                         Organization Name <span className="text-red-500">*</span>
                                     </label>
-                                    <input id="payer_name"
+                                    <input
+                                        id="payer_name"
                                         {...register('payer_name', {
                                             required: 'Organization Name is required',
                                             pattern: {
-                                                value: /^[A-Za-z\s]+$/,
-                                                message: 'Organization Name should contain only letters'
+                                                value: /^(?=.*[A-Za-z])[A-Za-z0-9\s]+$/,
+                                                message: 'Organization Name must contain at least one letter and can only include letters, numbers, and spaces'
                                             },
                                             minLength: {
                                                 value: 2,
@@ -138,10 +138,12 @@ const RegisterPage: React.FC = () => {
                                         type="text"
                                         className="mt-1 block w-full border-gray-300 border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
                                     />
-                                    {errors.organizationName && (
-                                        <p className="text-red-500 text-sm">{errors.organizationName.message}</p>
+                                    {errors.payer_name && (
+                                        <p className="text-red-500 text-sm">{errors.payer_name.message}</p>
                                     )}
                                 </div>
+
+
 
 
 
@@ -189,23 +191,47 @@ const RegisterPage: React.FC = () => {
 
 
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700">City (Optional)</label>
-                                        <input id="payer_city"
-                                            {...register('payer_city')}
+                                        <label className="block text-sm font-medium text-gray-700">
+                                            City (Optional)
+                                        </label>
+                                        <input
+                                            id="payer_city"
+                                            {...register('payer_city', {
+                                                pattern: {
+                                                    value: /^[A-Za-z\s]+$/,
+                                                    message: 'City must contain only letters'
+                                                }
+                                            })}
                                             type="text"
                                             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
                                         />
+                                        {errors.payer_city && (
+                                            <p className="text-red-500 text-sm">{errors.payer_city.message}</p>
+                                        )}
                                     </div>
+
 
 
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700">State (Optional)</label>
-                                        <input id="payer_state"
-                                            {...register('payer_state')}
+                                        <label className="block text-sm font-medium text-gray-700">
+                                            State (Optional)
+                                        </label>
+                                        <input
+                                            id="payer_state"
+                                            {...register('payer_state', {
+                                                pattern: {
+                                                    value: /^[A-Za-z\s]+$/,
+                                                    message: 'State must contain only letters'
+                                                }
+                                            })}
                                             type="text"
                                             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
                                         />
+                                        {errors.payer_state && (
+                                            <p className="text-red-500 text-sm">{errors.payer_state.message}</p>
+                                        )}
                                     </div>
+
 
 
                                     <div>
@@ -220,13 +246,25 @@ const RegisterPage: React.FC = () => {
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700">Zip Code (Optional)</label>
-                                        <input id="payer_zip"
-                                            {...register('payer_zip', { required: false })}
+                                        <label className="block text-sm font-medium text-gray-700">
+                                            Zip Code (Optional)
+                                        </label>
+                                        <input
+                                            id="payer_zip"
+                                            {...register('payer_zip', {
+                                                pattern: {
+                                                    value: /^[0-9]{5,6}$/,
+                                                    message: 'Zip Code must be a 5 or 6-digit number'
+                                                }
+                                            })}
                                             type="text"
                                             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
                                         />
+                                        {errors.payer_zip && (
+                                            <p className="text-red-500 text-sm">{errors.payer_zip.message}</p>
+                                        )}
                                     </div>
+
 
 
                                 </div>
@@ -265,7 +303,8 @@ const RegisterPage: React.FC = () => {
                                     <label className="block text-sm font-medium text-gray-700">
                                         Administration Name <span className="text-red-500">*</span>
                                     </label>
-                                    <input id="adm_name"
+                                    <input
+                                        id="adm_name"
                                         {...register('adm_name', {
                                             required: 'Administration Name is required',
                                             pattern: {
@@ -274,7 +313,7 @@ const RegisterPage: React.FC = () => {
                                             },
                                             minLength: {
                                                 value: 3,
-                                                message: 'Administration Name must be at least 2 characters'
+                                                message: 'Administration Name must be at least 3 characters'
                                             },
                                             maxLength: {
                                                 value: 50,
@@ -284,10 +323,11 @@ const RegisterPage: React.FC = () => {
                                         type="text"
                                         className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
                                     />
-                                    {errors.adminName && (
-                                        <p className="text-red-500 text-sm">{errors.adminName.message}</p>
+                                    {errors.adm_name && (
+                                        <p className="text-red-500 text-sm">{errors.adm_name.message}</p>
                                     )}
                                 </div>
+
 
 
 
@@ -296,15 +336,23 @@ const RegisterPage: React.FC = () => {
                                     <label className="block text-sm font-medium text-gray-700">
                                         Administration Phone <span className="text-red-500">*</span>
                                     </label>
-                                    <input id="adm_phone"
-                                        {...register('adm_phone', { required: true })}
+                                    <input
+                                        id="adm_phone"
+                                        {...register('adm_phone', {
+                                            required: 'Administration Phone is required',
+                                            pattern: {
+                                                value: /^[0-9]{10}$/,
+                                                message: 'Phone number must be a valid 10-digit number'
+                                            }
+                                        })}
                                         type="tel"
                                         className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
                                     />
-                                    {errors.adminPhone && (
-                                        <p className="text-red-500 text-sm">Administration Phone is required</p>
+                                    {errors.adm_phone && (
+                                        <p className="text-red-500 text-sm">{errors.adm_phone.message}</p>
                                     )}
                                 </div>
+
 
 
 
@@ -312,15 +360,23 @@ const RegisterPage: React.FC = () => {
                                     <label className="block text-sm font-medium text-gray-700">
                                         Administration Email <span className="text-red-500">*</span>
                                     </label>
-                                    <input id="adm_email"
-                                        {...register('adm_email', { required: true })}
+                                    <input
+                                        id="adm_email"
+                                        {...register('adm_email', {
+                                            required: 'Administration Email is required',
+                                            pattern: {
+                                                value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
+                                                message: 'Please enter a valid email address'
+                                            }
+                                        })}
                                         type="email"
                                         className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
                                     />
-                                    {errors.adminEmail && (
-                                        <p className="text-red-500 text-sm">Administration Email is required</p>
+                                    {errors.adm_email && (
+                                        <p className="text-red-500 text-sm">{errors.adm_email.message}</p>
                                     )}
                                 </div>
+
 
 
 
@@ -374,15 +430,23 @@ const RegisterPage: React.FC = () => {
                                     <label className="block text-sm font-medium text-gray-700">
                                         Organization EIN <span className="text-red-500">*</span>
                                     </label>
-                                    <input id="org_ein"
-                                        {...register('org_ein', { required: true })}
+                                    <input
+                                        id="org_ein"
+                                        {...register('org_ein', {
+                                            required: 'Organization EIN is required',
+                                            pattern: {
+                                                value: /^\d{2}-?\d{7}$/,
+                                                message: 'EIN must be in the format XX-XXXXXXX or XXXXXXXXX'
+                                            }
+                                        })}
                                         type="text"
                                         className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
                                     />
-                                    {errors.organizationEIN && (
-                                        <p className="text-red-500 text-sm">Organization EIN is required</p>
+                                    {errors.org_ein && (
+                                        <p className="text-red-500 text-sm">{errors.org_ein.message}</p>
                                     )}
                                 </div>
+
 
 
 
@@ -390,42 +454,69 @@ const RegisterPage: React.FC = () => {
                                     <label className="block text-sm font-medium text-gray-700">
                                         Organization Website <span className="text-red-500">*</span>
                                     </label>
-                                    <input id="org_website"
-                                        {...register('org_website', { required: true })}
+                                    <input
+                                        id="org_website"
+                                        {...register('org_website', {
+                                            required: 'Organization Website is required',
+                                            pattern: {
+                                                value: /^(https?:\/\/)?([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})(\/.*)?$/,
+                                                message: 'Please enter a valid URL (e.g., https://example.com)'
+                                            }
+                                        })}
                                         type="url"
                                         className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
                                     />
-                                    {errors.organizationWebsite && (
-                                        <p className="text-red-500 text-sm">Organization Website is required</p>
+                                    {errors.org_website && (
+                                        <p className="text-red-500 text-sm">{errors.org_website.message}</p>
                                     )}
                                 </div>
+
 
 
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700">Terms and Conditions Link (Optional)</label>
-                                    <input id="org_terms"
-                                        {...register('org_terms')}
+                                    <label className="block text-sm font-medium text-gray-700">
+                                        Terms and Conditions Link (Optional)
+                                    </label>
+                                    <input
+                                        id="org_terms"
+                                        {...register('org_terms', {
+                                            pattern: {
+                                                value: /^(https?:\/\/)?([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})(\/.*)?$/,
+                                                message: 'Please enter a valid URL for Terms and Conditions (e.g., https://example.com/terms)'
+                                            }
+                                        })}
                                         type="url"
                                         className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
                                     />
-                                    {errors.termsLink && (
-                                        <p className="text-red-500 text-sm">Please enter a valid URL for Terms and Conditions</p>
+                                    {errors.org_terms && (
+                                        <p className="text-red-500 text-sm">{errors.org_terms.message}</p>
                                     )}
                                 </div>
 
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700">Privacy Policy Link (Optional)</label>
-                                    <input id="privacy_policy"
-                                        {...register('privacy_policy')}
+                                    <label className="block text-sm font-medium text-gray-700">
+                                        Privacy Policy Link (Optional)
+                                    </label>
+                                    <input
+                                        id="privacy_policy"
+                                        {...register('privacy_policy', {
+                                            pattern: {
+                                                value: /^(https?:\/\/)?([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})(\/.*)?$/,
+                                                message: 'Invalid URL format for Privacy Policy Link (e.g., https://example.com/privacy-policy)'
+                                            }
+                                        })}
                                         type="url"
                                         className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
                                     />
-                                    {errors.privacyPolicyLink && (
-                                        <p className="text-red-500 text-sm">Invalid URL format for Privacy Policy Link</p>
+                                    {errors.privacy_policy && (
+                                        <p className="text-red-500 text-sm">{errors.privacy_policy.message}</p>
                                     )}
                                 </div>
+
+
+
 
 
                             </div>
