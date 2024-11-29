@@ -229,8 +229,8 @@ const LoginPage: React.FC = () => {
 
 
                             <div className="space-y-2">
-                                
-                                
+
+
                                 <div className="flex flex-col space-y-4">
                                     <div className="flex space-x-4">
                                         <button
@@ -267,7 +267,7 @@ const LoginPage: React.FC = () => {
                                         </button>
                                     </div>
 
-                                    
+
                                     {loginerror && (
                                         <div className="text-red-500 text-sm text-center">{loginerror}</div>
                                     )}
