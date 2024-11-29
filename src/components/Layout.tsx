@@ -22,8 +22,8 @@ export default function Layout() {
   const navigation = [
     { name: 'Payer Directory', href: '/directory', icon: Users },
     { name: 'Certificate Management', href: '/certificates', icon: Shield },
-    { name: 'Active Connections', href: '/connections', icon: Network },
     { name: 'Certificate Validation', href: '/validate', icon: CheckSquare },
+    { name: 'Active Connections', href: '/connections', icon: Network },
     { name: 'Trust Framework', href: '/trust-framework', icon: Lock },
     { name: 'Attestation', href: '/attestation', icon: FileText },
     { name: 'Bulk Data Exchange', href: '/bulk-data', icon: Upload },

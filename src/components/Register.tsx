@@ -55,6 +55,7 @@ const RegisterPage: React.FC = () => {
     const navigate = useNavigate();
     const [uploading, setUploading] = React.useState<boolean>(false);
     const [formData, setFormData] = React.useState<any>({});
+    const [confirmmsg, setconfirmmsg] = React.useState<any>();
 
     const location = useLocation();
     const locationState = location.state as LocationState;
@@ -81,6 +82,7 @@ const RegisterPage: React.FC = () => {
 
     const onSubmitEnrollment = async (e: any, data: any) => {
         e.preventDefault();
+        setconfirmmsg('..Wait Submitting information')
         console.log('Enrollment Submitted:', data);
         let enrollurl = config.apiUrl + '/enroll/enroll';
         console.log('enrollurl=', enrollurl)
@@ -98,10 +100,12 @@ const RegisterPage: React.FC = () => {
             .then(data => {
                 console.log(data)
                 if (data.success == true) {
+                    setconfirmmsg('..Wait Submitting information')
                     navigate('/success');
                 }
                 else {
-                    alert("User already exists");
+                    setconfirmmsg('User Already exists')
+                  
                 }
             })
             .catch(error => console.error('Error:', error));
@@ -602,6 +606,8 @@ const RegisterPage: React.FC = () => {
                             >
                                 Confirm
                             </button>
+                            <br /> 
+                            {confirmmsg}
                         </div>
                     </div>
 

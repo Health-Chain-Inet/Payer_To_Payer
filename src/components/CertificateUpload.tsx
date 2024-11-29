@@ -2,6 +2,7 @@ import React from 'react';
 import { Upload, CheckCircle, AlertCircle } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 
+
 interface CertificateUploadProps {
   onUpload: (data: FormData) => Promise<void>;
 }
@@ -9,18 +10,61 @@ interface CertificateUploadProps {
 export default function CertificateUpload({ onUpload }: CertificateUploadProps) {
   const { register, handleSubmit, formState: { errors } } = useForm();
   const [uploading, setUploading] = React.useState(false);
+  const [certificate, setCertificate] = React.useState('');
 
-  const onSubmit = async (data: any) => {
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    console.log(file)
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setCertificate(reader.result as string);  // Store the certificate text
+        console.log('res=', reader.result)
+      };
+      reader.readAsText(file);  // Read the file as text
+    }
+  };
+
+  const onSubmit = async (cdata: any) => {
+  
+    console.log("cdata=", cdata)
+    console.log("certificate read start= ",  cdata.certificate[0])
     setUploading(true);
-    const formData = new FormData();
-    formData.append('certificate', data.certificate[0]);
+
     try {
-      await onUpload(formData);
+     // await onUpload(formData) ;
+      // You can write the URL of your server or any other endpoint used for file upload
+
+      //const formData = new FormData();
+      //formData.append('certificate-aaa', cdata.certificate[0]);
+      //formData.append('certcontent', "certificatefile"); // Add the custom file name
+
+      const user = localStorage.getItem('user')
+      const email = localStorage.getItem('email')
+      // console.log('user=', user)
+      // console.log('email=', email)
+
+      const postdata = {
+        certcontent: {certificate}, 
+        user: user, 
+        email: email 
+      } 
+
+      const result = await fetch('http://localhost:3001/uploadcertificate', {
+        method: 'POST',
+        body: JSON.stringify(postdata),
+      });
+
+
+      console.log('result=', result);
+
+
     } catch (error) {
       console.error('Upload failed:', error);
     }
     setUploading(false);
   };
+
 
   return (
     <div className="bg-white shadow sm:rounded-lg p-6">
@@ -36,16 +80,21 @@ export default function CertificateUpload({ onUpload }: CertificateUploadProps) 
                 <div className="flex text-sm text-gray-600">
                   <label className="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500">
                     <span>Upload a file</span>
-                    <input
+                    <input 
                       {...register('certificate', { required: true })}
                       type="file"
                       className="sr-only"
-                      accept=".pem,.crt,.cer"
+                      accept=".pem,.crt,.cer" 
+                      onChange={handleFileUpload}
                     />
                   </label>
                 </div>
                 <p className="text-xs text-gray-500">PEM, CRT, or CER up to 5MB</p>
               </div>
+              {/* <div>
+                <h3>PEM File Content:</h3>
+                <pre>{certificate}</pre>
+              </div> */}
             </div>
           </div>
 
@@ -55,6 +104,20 @@ export default function CertificateUpload({ onUpload }: CertificateUploadProps) 
               Certificate is required
             </div>
           )}
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Payer Endpoint URL/ PAYER BASE URL
+              </label>
+              <input
+                type="url"
+                {...register('endpoint', { required: true })}
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                placeholder="https://api.example.com"
+              />
+              {errors.endpoint && (
+                <p className="mt-2 text-sm text-red-600">Endpoint URL is required</p>
+              )}
+            </div>
 
           <button
             type="submit"
