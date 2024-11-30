@@ -171,16 +171,7 @@ export default function PayerDirectory() {
     // Fetch payer data from API
     console.log('use effect')
     const fetchPayerData = async () => {
-      // console.log('inside fetchPayerData')
-      // const response = await fetch(config.apiUrl + '/directory/fetchPayers');
-      // // Log the raw response text
-      // const jsonData = await response.json();
-      // console.log('jsonData=', jsonData)
-      // if(jsonData.status == 401) {
-      //   navigate('/login')
-      //   //console.log('navigate to login')
-      // }
-
+  
       const user = localStorage.getItem('user');
       const email = localStorage.getItem('email');
       console.log('user=', user, 'email=', email);

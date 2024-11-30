@@ -11,6 +11,7 @@ export default function CertificateUpload({ onUpload }: CertificateUploadProps) 
   const { register, handleSubmit, formState: { errors } } = useForm();
   const [uploading, setUploading] = React.useState(false);
   const [certificate, setCertificate] = React.useState('');
+  const [msg, setmsg] = React.useState('');
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -32,6 +33,7 @@ export default function CertificateUpload({ onUpload }: CertificateUploadProps) 
     setUploading(true);
 
     try {
+      setmsg('uploading.. please wait')
      // await onUpload(formData) ;
       // You can write the URL of your server or any other endpoint used for file upload
 
@@ -47,16 +49,20 @@ export default function CertificateUpload({ onUpload }: CertificateUploadProps) 
       const postdata = {
         certcontent: {certificate}, 
         user: user, 
-        email: email 
+        email: email, 
+        endpoint: cdata.endpoint
       } 
 
-      const result = await fetch('http://localhost:3001/uploadcertificate', {
+      const result = await fetch('http://localhost:3001/certificate/uploadcertificate', {
         method: 'POST',
         body: JSON.stringify(postdata),
       });
 
-
       console.log('result=', result);
+      setmsg('file uploaded')
+      setTimeout(()=>{
+        setmsg('')
+      }, 2500)
 
 
     } catch (error) {
@@ -136,6 +142,9 @@ export default function CertificateUpload({ onUpload }: CertificateUploadProps) 
               </>
             )}
           </button>
+        </div>
+        <div>
+           {msg}
         </div>
       </form>
     </div>
