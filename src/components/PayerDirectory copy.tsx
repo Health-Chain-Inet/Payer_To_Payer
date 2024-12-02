@@ -27,7 +27,7 @@ import type { Payer } from '../types';
 import config from '../config/config.js';
 import { GlobalContext } from './GlobalContext';
 import { useNavigate } from 'react-router-dom';
-// import { mockPayers } from '../data/mockPayers.js';
+import { mockPayers } from '../data/mockPayers.js';
 
 interface Payer {
   id: string;
@@ -54,7 +54,33 @@ interface PayerDirectoryState {
 export default function PayerDirectory() {
   const { globalVariable } = React.useContext(GlobalContext);
   const navigate = useNavigate();
- 
+  // interface Payer {
+  //   activate_key:string,
+  //   active:string,
+  //   adm_email:string,
+  //   adm_id:string,
+  //   adm_name: string,
+  //   adm_password:string,
+  //   adm_phone:string,
+  //   certificate_uploaded:string,
+  //   certificate_verified:string,
+  //   created_date:string,
+  //   org_ein:string,
+  //   org_privacy_policy:string,
+  //   org_terms:string,
+  //   org_website:string,
+  //   payer_addr1:string,
+  //   payer_addr2:string,
+  //   payer_base_url:string,
+  //   payer_city:string,
+  //   payer_country:string,
+  //   payer_id:string,
+  //   payer_name:string,
+  //   payer_state:string,
+  //   payer_type:string,
+  //   payer_zip:string,
+  //   updated_date:null
+  // }
   const [payor, setPayor] = useState([]);
 
   const [test, settest] = useState<any>([]);
@@ -76,20 +102,34 @@ export default function PayerDirectory() {
     error: null
   });
 
- 
 
 
-  const filteredPayors = React.useMemo(() => {
-    return payor.filter(p => {
-      const searchLower = searchTerm.toLowerCase();
-      return (
-        p.payer_name.toLowerCase().includes(searchLower) ||
-        p.adm_email.toLowerCase().includes(searchLower) ||
-        p.payer_addr1.toLowerCase().includes(searchLower) ||
-        p.payer_addr2.toLowerCase().includes(searchLower)
-      );
-    });
-  }, [payor, searchTerm]);
+  // const [payers, setPayers] = React.useState<Payer[]>(mockPayers);
+
+
+
+  // 1. Memoize filtered results
+  // const filteredPayers = React.useMemo(() => {
+  //   return payers.filter(payer => {
+  //     const matchesSearch =
+  //       payer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  //       payer.ein.includes(searchTerm) ||
+  //       payer.organization.email.toLowerCase().includes(searchTerm.toLowerCase());
+
+  //     const matchesTrustLevel =
+  //       filterCriteria.trustLevel === 'all' ||
+  //       payer.attestation.trustFrameworkLevel === filterCriteria.trustLevel;
+
+  //     const matchesAttestationStatus =
+  //       filterCriteria.attestationStatus === 'all' ||
+  //       payer.attestation.status === filterCriteria.attestationStatus;
+
+  //     return matchesSearch && matchesTrustLevel && matchesAttestationStatus;
+  //   });
+  // }, [payers, searchTerm, filterCriteria]);
+
+
+
 
 
 
@@ -106,12 +146,12 @@ export default function PayerDirectory() {
       console.log('data=', data.message)
       if (data.status === 200) {
         // Update the payer state with the fetched data
-        const msg = data.message;
-        setPayor([...msg]);
-        payor.map((item) => {
-          console.log('payor=', item)
+        const msg = data.message; 
+       setPayor([...msg]);
+       payor.map((item)=> {
+        console.log('payor=', item)
 
-        })
+       })
       }
     } catch (error) {
       console.error('Error fetching payer data:', error);
@@ -121,34 +161,61 @@ export default function PayerDirectory() {
 
 
   // SECTION 3: Modal Component
-  const AdminModal = ({ payor, onClose }) => (
+  const AdminModal = ({ payer, onClose }) => (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
       <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
         <div className="flex justify-between items-center">
           <h3 className="text-lg font-medium text-gray-900">
             Administration Details
           </h3>
-          <button onClick={onClose} className="text-gray-600 hover:text-gray-800" title="Close">
+          <button onClick={onClose}>
             <XCircle className="h-6 w-6" />
           </button>
         </div>
         <div className="mt-4 space-y-4">
           <div>
             <h4>Payer Name</h4>
-            <p>{payor.payer_name}</p>
+            <p>{payer.payerName}</p>
           </div>
           <div>
             <h4>Email</h4>
-            <p>{payor.adm_email}</p>
+            <p>{payer.payerEmail}</p>
           </div>
           <div>
             <h4>Address</h4>
-            <p>{payor.adm_addr1}</p>
+            <p>{payer.payerAddress}</p>
           </div>
         </div>
       </div>
     </div>
   );
+
+
+
+
+  // const renderSupportedVersions = React.useCallback((payer: Payer) => (
+  //   <div className="space-y-4">
+  //     <h4 className="text-sm font-medium text-gray-900">Supported Versions</h4>
+  //     <div className="grid grid-cols-1 gap-4">
+  //       {Object.entries(payer.attestation.supportedVersions).map(([category, versions]) => (
+  //         <div key={category} className="space-y-2">
+  //           <h5 className="text-sm font-medium text-gray-700 capitalize">{category}</h5>
+  //           <div className="flex flex-wrap gap-2">
+  //             {versions.map((version, index) => (
+  //               <span
+  //                 key={index}
+  //                 className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+  //               >
+  //                 {version}
+  //               </span>
+  //             ))}
+  //           </div>
+  //         </div>
+  //       ))}
+  //     </div>
+  //   </div>
+  // ), []);
+
 
 
 
@@ -169,6 +236,103 @@ export default function PayerDirectory() {
 
 
 
+  // useEffect(() => {
+  //   const fetchPayerData = async () => {
+
+  //     try {
+  //       const response = await fetch('http://localhost:3001/directory/fetchAllPayers');
+  //       const data = await response.json();
+  //       console.log("data = ",data)
+  //       setPayer(prev => ({ ...prev, data }));
+
+  //     } catch (error) {
+  //       console.log('Error fetching payer data:', error);
+  //     }
+  //   };
+    
+
+  //   fetchPayerData();
+  // }, []);
+
+
+  // const renderPayerRows = () => {
+  //   if (state.isLoading) {
+  //     return (
+  //       <tr>
+  //         <td colSpan={5} className="px-6 py-4 text-center">
+  //           <div className="flex justify-center items-center space-x-2">
+  //             <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-500"></div>
+  //             <span>Loading payers...</span>
+  //           </div>
+  //         </td>
+  //       </tr>
+  //     );
+  //   }
+
+  //   if (state.error) {
+  //     return (
+  //       <tr>
+  //         <td colSpan={5} className="px-6 py-4 text-center text-red-600">
+  //           {state.error}
+  //         </td>
+  //       </tr>
+  //     );
+  //   }
+
+  //   // if (filteredPayers.length === 0) {
+  //   //   return (
+  //   //     <tr>
+  //   //       <td colSpan={5} className="px-6 py-4 text-center">
+  //   //         No payers found matching your search criteria.
+  //   //       </td>
+  //   //     </tr>
+  //   //   );
+  //   // }
+
+  //   // return filteredPayers.map((payer) => (
+  //   //   <tr key={payer.id} className="hover:bg-gray-50">
+  //   //     <td className="px-6 py-4">
+  //   //       <div className="flex items-center">
+  //   //         <div>
+  //   //           <div className="text-sm font-medium text-gray-900">{payer.payer_name}</div>
+  //   //           <div className="text-sm text-gray-500">{payer.payer_email}</div>
+  //   //         </div>
+  //   //       </div>
+  //   //     </td>
+  //   //     <td className="px-6 py-4">
+  //   //       <div className="text-sm text-gray-900">{payer.payer_address}</div>
+  //   //     </td>
+  //   //     <td className="px-6 py-4">
+  //   //       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${payer.certificate_uploaded
+  //   //         ? 'bg-green-100 text-green-800'
+  //   //         : 'bg-red-100 text-red-800'
+  //   //         }`}>
+  //   //         {payer.certificate_uploaded ? 'Yes' : 'No'}
+  //   //       </span>
+  //   //     </td>
+  //   //     <td className="px-6 py-4">
+  //   //       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${payer.certificate_verified
+  //   //         ? 'bg-green-100 text-green-800'
+  //   //         : 'bg-yellow-100 text-yellow-800'
+  //   //         }`}>
+  //   //         {payer.certificate_verified ? 'Verified' : 'Pending'}
+  //   //       </span>
+  //   //     </td>
+  //   //     <td className="px-6 py-4">
+  //   //       <button
+  //   //         onClick={() => setState(prev => ({
+  //   //           ...prev,
+  //   //           selectedPayer: payer,
+  //   //           showAdminModal: true
+  //   //         }))}
+  //   //         className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200"
+  //   //       >
+  //   //         More Info
+  //   //       </button>
+  //   //     </td>
+  //   //   </tr>
+  //   // ));
+  // };
 
   if (state.show === 0) return null;
 
@@ -180,6 +344,9 @@ export default function PayerDirectory() {
           <div className="flex justify-between items-center">
             <h3 className="text-lg leading-6 font-medium text-gray-900">
               Payer Directory
+              {/* {payor.map( (item) => (
+                <pre>{item.payer_id}</pre>
+              ))} */}
             </h3>
           </div>
 
@@ -199,7 +366,7 @@ export default function PayerDirectory() {
 
           </div>
         </div>
-
+ 
 
         {/* ******************** Payers Table **************** */}
         <div className="border-t border-gray-200">
@@ -228,52 +395,46 @@ export default function PayerDirectory() {
               </tr>
             </thead>
 
+
             {/* Payer rows */}
             <tbody className="bg-white divide-y divide-gray-200">
-              {filteredPayors.length > 0 ? (
-                filteredPayors.map((p) => (
-                  <tr key={p.payer_id} className="cursor-pointer hover:bg-gray-50">
-                    <td className="px-6 py-4">
-                      <div className="flex items-center">
-                        <div>
-                          <div className="text-sm font-medium text-gray-900">{p.payer_name}</div>
-                          <div className="text-sm text-gray-500">{p.adm_email}</div>
-                        </div>
+              
+              {payor.map((p) => (
+                <tr key={p.id} className="cursor-pointer hover:bg-gray-50">
+                  <td className="px-6 py-4">
+                    <div className="flex items-center">
+                      <div>
+                        <div className="text-sm font-medium text-gray-900">{p.payer_name}</div>
+                        <div className="text-sm text-gray-500">{p.adm_email}</div>
                       </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="text-sm text-gray-900">{p.payer_addr1}<br />{p.payer_addr2} </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${p.certificate_uploaded ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                        {p.certificate_uploaded ? 'Yes' : 'No'}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${p.certificate_verified ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
-                        {p.certificate_verified ? 'Verified' : 'Pending'}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <button
-                        onClick={() => {
-                          AdminModal(p);
-                          setShowAdminModal(true);
-                        }}
-                        className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200"
-                      >
-                        More Info
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={5} className="px-6 py-4 text-center">
-                    No results found for "{searchTerm}"
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="text-sm text-gray-900">{p.payer_addr1}<br/>{p.payer_addr2} </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${p.certificate_uploaded ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                      {p.certificate_uploaded ? 'Yes' : 'No'}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${p.certificate_verified ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                      {p.certificate_verified ? 'Verified' : 'Pending'}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <button
+                      onClick={() => {
+                        setSelectedPayer(p);
+                        setShowAdminModal(true);
+                      }}
+                      className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200"
+                    >
+                      More Info
+                    </button>
                   </td>
                 </tr>
-              )}
+              ))}
             </tbody>
 
 

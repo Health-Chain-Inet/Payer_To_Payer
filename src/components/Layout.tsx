@@ -14,6 +14,8 @@ import {
 } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 
+import Logo from "../../dist/assets/hclogo.png"
+
 export default function Layout() {
   const { user, logout } = useAuthStore();
   const location = useLocation();
@@ -44,9 +46,11 @@ export default function Layout() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex">
-              <div className="flex-shrink-0 flex items-center">
-                <Shield className="h-8 w-8 text-indigo-600" />
-                <span className="ml-2 text-xl font-bold text-gray-900">P2P Connect</span>
+              <div className="flex-shrink-0 flex items-left">
+                {/* <Shield className="h-8 w-8 text-indigo-600" />
+                <span className="ml-2 text-xl font-bold text-gray-900">P2P Connect</span> */}
+                <img className='w-full h-full rounded-full' src={Logo} alt="Health-chain logo" />
+                <span className="ml-2 text-xl font-bold text-gray-900">P2P Connect</span> 
               </div>
             </div>
             <div className="flex items-center">
