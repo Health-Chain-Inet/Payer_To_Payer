@@ -28,47 +28,47 @@ export default function CertificateUpload({ onUpload }: CertificateUploadProps) 
   const [uploading, setUploading] = React.useState(false);
   const [certificate, setCertificate] = React.useState('');
   const [msg, setmsg] = React.useState('');
+  const [certmsg, setcertmsg] =  React.useState('')
   const [payerDetails, setPayerDetails] = React.useState<PayerDetails | null>([]);
   const [isLoading, setIsLoading] = React.useState(false);
 
 
+  const fetchPayerDetails = async () => {
+    const email = localStorage.getItem('email');
+    console.log('Fetching payer details for email:', email);
+    if (!email) return;
+
+    setcertmsg('Loading...')
+    try {
+      const response = await fetch(`http://localhost:3001/directory/fetchcertificatedetails`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email })
+      });
+      const data = await response.json();
+      console.log('response', data)
+      setcertmsg('')
+      setPayerDetails(data.message);
+      console.log(payerDetails);
+
+      // Auto-fill the endpoint field
+      if (data.endpoint) {
+        console.log('Payer details fetched:', data);
+        setValue('endpoint', data.endpoint);
+      }
+      console.log(data)
+    } catch (error) {
+      console.log(Response)
+      console.error('Error fetching payer details:', error);
+    } finally {
+      // setIsLoading(false);
+    }
+  };
+
   // Fetch payer details on component mount
   useEffect(() => {
-    const fetchPayerDetails = async () => {
-      const email = localStorage.getItem('email');
-      console.log('Fetching payer details for email:', email);
-      if (!email) return;
-
-
-      try {
-        const response = await fetch(`http://localhost:3001/directory/fetchcertificatedetails`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ email })
-        });
-        const data = await response.json();
-        console.log('response', data)
-
-        setPayerDetails(data.message);
-        console.log(payerDetails);
-
-        // Auto-fill the endpoint field
-        if (data.endpoint) {
-          console.log('Payer details fetched:', data);
-          setValue('endpoint', data.endpoint);
-        }
-        console.log(data)
-      } catch (error) {
-        console.log(Response)
-        console.error('Error fetching payer details:', error);
-      } finally {
-        // setIsLoading(false);
-      }
-    };
-
-
     fetchPayerDetails();
   }, [setValue]);
 
@@ -180,28 +180,29 @@ export default function CertificateUpload({ onUpload }: CertificateUploadProps) 
         setmsg('')
       }, 2500)
 
-      // Fetch certificate details after successful upload
-      // const certResponse = await fetch(`http://localhost:3001/certificate/getCertificateDetails/${email}`, {
-      //   method: 'GET',
-      //   headers: {
-      //     'Content-Type': 'application/json'
-      //   }
-      // });
-
-      // if (!certResponse.ok) throw new Error('Failed to fetch certificate details');
-
-      // const certData = await certResponse.json();
-      // setPayerDetails(certData);
-
-
-      
-
-
+      fetchPayerDetails()
     } catch (error) {
       console.error('Upload failed:', error);
     }
     setUploading(false);
   };
+
+  
+    // Function to format the date to 'dd-mm-yyyy'
+    const formatDate = (date) => {
+      const d = new Date(date);
+      const day = d.getDate().toString().padStart(2, '0'); // Ensure day is two digits
+      const month = (d.getMonth() + 1).toString().padStart(2, '0'); // Get month and ensure it's two digits
+      const year = d.getFullYear();
+      // Get the hours, minutes, and seconds
+      const hours = d.getHours().toString().padStart(2, '0');
+      const minutes = d.getMinutes().toString().padStart(2, '0');
+      const seconds = d.getSeconds().toString().padStart(2, '0');
+
+      // Return formatted date and time
+      return `${day}-${month}-${year} ${hours}:${minutes}:${seconds}`;
+    };
+  
 
 
   return (
@@ -286,8 +287,11 @@ export default function CertificateUpload({ onUpload }: CertificateUploadProps) 
 
 <div className="bg-white shadow sm:rounded-lg p-6 mt-4">
   <h2 className="text-xl font-semibold text-gray-900 mb-4">Certificate Details</h2>
-
+  <div className="flex-grow overflow-x-auto bg-gray-50 rounded-lg">
+       {certmsg}
+    </div>   
   <div className="flex gap-4">
+ 
     <div className="flex-grow overflow-x-auto bg-gray-50 rounded-lg">
       <table className="min-w-full">
         <thead>
@@ -318,20 +322,20 @@ export default function CertificateUpload({ onUpload }: CertificateUploadProps) 
                 </span>
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                {p.validity_notbefore || 'No Data'}
+                {formatDate(p.validity_notbefore) || 'No Data'}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                {p.validity_notafter || 'No data'}
+                {formatDate(p.validity_notafter) || 'No data'}
               </td>
 
               <td className="flex gap-2 items-center">
 
-                <button className="flex justify-center py-1 px-1 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:bg-red-400">
+                <button  title="Verify" className="flex justify-center py-1 px-1 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:bg-red-400">
                   <CheckCircle className="h-4 w-4 mr-1" />
                   {/* Verify <br /> Certificate */}
                 </button>
 
-                <button onClick={onDownload} className="flex justify-center py-1 px-1 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:bg-green-400">
+                <button  title="Download" onClick={onDownload} className="flex justify-center py-1 px-1 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:bg-green-400">
                   <ArrowDown className="h-4 w-4 mr-1" />
                   {/* Download <br /> Certificate */}
                 </button>

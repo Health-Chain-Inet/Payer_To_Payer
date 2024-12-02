@@ -89,6 +89,8 @@ const RegisterPage: React.FC = () => {
         //navigate('/success');
         let formdata = new URLSearchParams(data.administration).toString();
         console.log('formdata=', formdata)
+        document.getElementById("btnConfirm").disabled = true;
+
         await fetch(enrollurl, {
             method: 'POST',
             body: formdata,
@@ -105,10 +107,14 @@ const RegisterPage: React.FC = () => {
                 }
                 else {
                     setconfirmmsg('User Already exists')
+                    //document.getElementById("btnConfirm").disabled = false;
                   
                 }
             })
-            .catch(error => console.error('Error:', error));
+            .catch(error => {
+                console.error('Error:', error)
+                document.getElementById("btnConfirm").disabled = false;
+            });
     }
 
     return (
@@ -688,6 +694,7 @@ const RegisterPage: React.FC = () => {
                             </button>
                             <button
                                 type="button"
+                                id="btnConfirm"
                                 onClick={() => {
                                     //console.log('Form submitted:', formData);
                                     return onSubmitEnrollment(event, formData);
@@ -697,8 +704,13 @@ const RegisterPage: React.FC = () => {
                             >
                                 Confirm
                             </button>
-                            <br /> 
-                            {confirmmsg}
+             
+                        </div>
+                        <div className="flex justify-between space-x-12 mt-6">
+                        <br /> 
+                        <div className="ml-auto">{confirmmsg}</div>
+
+               
                         </div>
                     </div>
 

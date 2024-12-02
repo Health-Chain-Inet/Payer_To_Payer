@@ -1,159 +1,121 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useCallback } from 'react';
 import Logo from '../../dist/assets/hclogo.png';
 import { useNavigate } from 'react-router-dom';
 import config from '../config/config.js';
-import { GlobalContext } from "./GlobalContext.tsx"
+import { GlobalContext } from "./GlobalContext.tsx";
 
 const LoginPage: React.FC = () => {
     const [isLoading, setIsLoading] = useState(false);
-    const [loginerror, setLoginError] = useState('');
-    const { globalVariable, setGlobalVariable } = useContext<any>(GlobalContext);
-
+    const [loginError, setLoginError] = useState('');
+    const { setGlobalVariable } = useContext<any>(GlobalContext);
     const navigate = useNavigate();
-    const [errors, setErrors] = useState({
-        username: '',
-        password: {
-            required: '',
-            length: '',
-            uppercase: '',
-            lowercase: '',
-            number: '',
-            special: ''
-        }
-    });
-
-
 
     const [formData, setFormData] = useState({
         username: '',
         password: ''
     });
 
-    const validateForm = () => {
-        let isValid = true;
-        const newErrors = {
-            username: '',
-            password: {
-                required: '',
-                length: '',
-                uppercase: '',
-                lowercase: '',
-                number: '',
-                special: ''
-            }
+    // Memoize validation functions
+    const validatePassword = useCallback((password: string) => {
+        const errors = {
+            required: '',
+            length: '',
+            uppercase: '',
+            lowercase: '',
+            number: '',
+            special: ''
         };
 
-        // Username validation
-        if (!formData.username.trim()) {
-            newErrors.username = 'Username is required';
-            isValid = false;
-        } else if (formData.username.length < 3) {
-            newErrors.username = 'Username must be at least 3 characters';
-            isValid = false;
+        if (!password) {
+            errors.required = 'Password is required';
+            return errors;
         }
 
-        // Password validation
-        if (!formData.password) {
-            newErrors.password.required = 'Password is required';
-            isValid = false;
-        } else {
-            if (formData.password.length < 8) {
-                newErrors.password.length = 'Password must be at least 8 characters';
-                isValid = false;
-            }
-            if (!/[A-Z]/.test(formData.password)) {
-                newErrors.password.uppercase = 'Password must contain at least one uppercase letter';
-                isValid = false;
-            }
-            if (!/[a-z]/.test(formData.password)) {
-                newErrors.password.lowercase = 'Password must contain at least one lowercase letter';
-                isValid = false;
-            }
-            if (!/[0-9]/.test(formData.password)) {
-                newErrors.password.number = 'Password must contain at least one number';
-                isValid = false;
-            }
-            if (!/[!@#$%^&*]/.test(formData.password)) {
-                newErrors.password.special = 'Password must contain at least one special character (!@#$%^&*)';
-                isValid = false;
-            }
-        }
+        if (password.length < 8) errors.length = 'Password must be at least 8 characters';
+        if (!/[A-Z]/.test(password)) errors.uppercase = 'Password must contain at least one uppercase letter';
+        if (!/[a-z]/.test(password)) errors.lowercase = 'Password must contain at least one lowercase letter';
+        if (!/[0-9]/.test(password)) errors.number = 'Password must contain at least one number';
+        if (!/[!@#$%^&*]/.test(password)) errors.special = 'Password must contain at least one special character (!@#$%^&*)';
 
-        setErrors(newErrors);
-        return isValid;
-    };
+        return errors;
+    }, []);
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const [errors, setErrors] = useState({
+        username: '',
+        password: validatePassword('')
+    });
+
+    const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
-        // Clear error when user starts typing
-        setErrors(prev => ({
-            ...prev,
-            [name]: ''
-        }));
-    };
+        setFormData(prev => ({ ...prev, [name]: value }));
+
+        // Immediate validation feedback
+        if (name === 'password') {
+            setErrors(prev => ({
+                ...prev,
+                password: validatePassword(value)
+            }));
+        } else {
+            setErrors(prev => ({
+                ...prev,
+                [name]: value.length < 3 ? 'Username must be at least 3 characters' : ''
+            }));
+        }
+    }, [validatePassword]);
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!validateForm()) {
+        // Quick validation check
+        const passwordErrors = validatePassword(formData.password);
+        const hasPasswordErrors = Object.values(passwordErrors).some(error => error !== '');
+        if (!formData.username || hasPasswordErrors) {
+            setErrors({
+                username: !formData.username ? 'Username is required' : '',
+                password: passwordErrors
+            });
             return;
         }
 
+        setIsLoading(true);
+        setLoginError('');
+
         try {
-            setIsLoading(true);
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 1500));
-
-            // Reset form data
-            setFormData({
-                username: '',
-                password: ''
-            });
-
-            const loginurl = config.apiUrl + '/validatelogin';
-            const formdata = new URLSearchParams(formData).toString();
-            console.log('formdata=', formdata)
-            await fetch(loginurl, {
+            const loginUrl = `${config.apiUrl}/validatelogin`;
+            const response = await fetch(loginUrl, {
                 method: 'POST',
-                body: formdata,
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
-                }
-            })
-                .then(response => response.json()) // assuming the server returns a JSON response
-                .then(data => {
-                    console.log(data)
-                    if (data.status == 200) {
+                },
+                body: new URLSearchParams(formData).toString()
+            });
 
-                        localStorage.setItem('user', data.message.adm_name)
-                        localStorage.setItem('email', data.message.adm_email)
+            const data = await response.json();
 
-                        setGlobalVariable({ user: localStorage.getItem('user'), email: localStorage.getItem('email') })
-                        setLoginError("");
-                        navigate('/directory');
-                    }
-                    else {
-                        setLoginError("Invalid Username or Password");
-                    }
+            if (data.status === 200) {
+                localStorage.setItem('user', data.message.adm_name);
+                localStorage.setItem('email', data.message.adm_email);
 
-                })
-                .catch(error => console.error('Error:', error));
+                setGlobalVariable({
+                    user: data.message.adm_name,
+                    email: data.message.adm_email
+                });
 
-
-            // Redirect to dashboard
-            //navigate('/directory');
-
+                navigate('/directory');
+            } else {
+                setLoginError('Invalid Username or Password');
+            }
         } catch (error) {
             console.error('Login failed:', error);
+            setLoginError('An error occurred during login. Please try again.');
         } finally {
             setIsLoading(false);
         }
     };
 
+    const isFormValid = formData.username && formData.password &&
+        !errors.username &&
+        !Object.values(errors.password).some(error => error !== '');
 
     return (
         <div className="flex h-screen">
@@ -167,117 +129,95 @@ const LoginPage: React.FC = () => {
                 <div className="w-full max-w-md shadow-[0_8px_50px_rgb(0,0,0,0.12)]">
                     <div className="bg-white p-6 rounded-lg shadow-md">
                         <div className="text-center mb-6">
-                            <div className="w-40 h-20 rounded-full mx-auto mb-4">
-                                <img src={Logo} alt="Health Chain" className="w-full h-full rounded-full" />
+                            <div className="w-40 h-20 mx-auto mb-4">
+                                <img src={Logo} alt="Health Chain" className="w-full h-full" />
                             </div>
                         </div>
 
                         <form onSubmit={handleLogin} className="space-y-4">
-
-                            <div className="relative">
-                                <label htmlFor="email" className="flex items-center">
-                                    Email
-                                    <span className="text-red-500 ml-1">*</span>
-                                </label>
-                                <input
-                                    type="email"
-                                    id="email"
-                                    name="username"
-                                    placeholder="Email address"
-                                    value={formData.username}
-                                    onChange={handleInputChange}
-                                    className={`w-full px-4 py-2 border rounded focus:outline-none focus:border-[#004188] pl-8 ${errors.username ? 'border-red-500' : 'border-gray-300'
-                                        }`}
-                                    required
-                                />
-                                {errors.username && (
-                                    <p className="text-red-500 text-xs mt-1">{errors.username}</p>
-                                )}
-                            </div>
-
-
-
-
-                            <div className="relative">
-                                <label htmlFor="password" className="flex items-center">
-                                    Password
-                                    <span className="text-red-500 ml-1">*</span>
-                                </label>
-                                <input
-                                    type="password"
-                                    id="password"
-                                    name="password"
-                                    placeholder="Password"
-                                    value={formData.password}
-                                    onChange={handleInputChange}
-                                    className={`w-full px-4 py-2 border rounded focus:outline-none focus:border-[#004188] pl-8 ${Object.values(errors.password).some(error => error !== '')
-                                        ? 'border-red-500'
-                                        : 'border-gray-300'
-                                        }`}
-                                    required
-                                />
-                                <div className="mt-2 space-y-1">
-                                    {Object.entries(errors.password).map(([key, value]) =>
-                                        value && (
-                                            <p key={key} className="text-red-500 text-xs">{value}</p>
-                                        )
+                            <div className="space-y-4">
+                                <div>
+                                    <label htmlFor="email" className="flex items-center">
+                                        Email<span className="text-red-500 ml-1">*</span>
+                                    </label>
+                                    <input
+                                        type="email"
+                                        id="email"
+                                        name="username"
+                                        value={formData.username}
+                                        onChange={handleInputChange}
+                                        className={`w-full px-4 py-2 border rounded focus:outline-none focus:border-[#004188] ${errors.username ? 'border-red-500' : 'border-gray-300'
+                                            }`}
+                                        placeholder="Email address"
+                                        required
+                                    />
+                                    {errors.username && (
+                                        <p className="text-red-500 text-xs mt-1">{errors.username}</p>
                                     )}
+                                </div>
+
+                                <div>
+                                    <label htmlFor="password" className="flex items-center">
+                                        Password<span className="text-red-500 ml-1">*</span>
+                                    </label>
+                                    <input
+                                        type="password"
+                                        id="password"
+                                        name="password"
+                                        value={formData.password}
+                                        onChange={handleInputChange}
+                                        className={`w-full px-4 py-2 border rounded focus:outline-none focus:border-[#004188] ${Object.values(errors.password).some(error => error !== '')
+                                                ? 'border-red-500'
+                                                : 'border-gray-300'
+                                            }`}
+                                        placeholder="Password"
+                                        required
+                                    />
+                                    <div className="mt-2 space-y-1">
+                                        {Object.entries(errors.password).map(([key, value]) =>
+                                            value && (
+                                                <p key={key} className="text-red-500 text-xs">{value}</p>
+                                            )
+                                        )}
+                                    </div>
                                 </div>
                             </div>
 
-
-
-
-                            <div className="space-y-2">
-
-
-                                <div className="flex flex-col space-y-4">
-                                    <div className="flex space-x-4">
-                                        <button
-                                            type="submit"
-                                            className={`flex-1 py-2 rounded transition duration-300 ${isLoading || !formData.username || !formData.password
+                            <div className="flex flex-col space-y-4">
+                                <div className="flex space-x-4">
+                                    <button
+                                        type="submit"
+                                        className={`flex-1 py-2 rounded transition duration-300 ${!isFormValid || isLoading
                                                 ? 'bg-gray-400 cursor-not-allowed'
                                                 : 'bg-[#004188] hover:bg-[#003166]'
-                                                } text-white`}
-                                            disabled={isLoading || !formData.username || !formData.password}
-                                        >
-                                            {isLoading ? (
-                                                <span className="flex items-center justify-center">
-                                                    <svg className="animate-spin h-5 w-5 mr-2" viewBox="0 0 24 24">
-                                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                                                    </svg>
-                                                    Logging in...
-                                                </span>
-                                            ) : (
-                                                'Login'
-                                            )}
-                                        </button>
-
-
-
-
-                                        <span className="flex-1 text-center text-gray-600">or</span>
-                                        <button
-                                            type="button"
-                                            className="flex-1 bg-gray-200 text-gray-800 py-2 rounded hover:bg-gray-300 transition duration-300"
-                                            onClick={() => navigate('/register')}
-                                        >
-                                            Enroll
-                                        </button>
-                                    </div>
-
-
-                                    {loginerror && (
-                                        <div className="text-red-500 text-sm text-center">{loginerror}</div>
-                                    )}
+                                            } text-white`}
+                                        disabled={!isFormValid || isLoading}
+                                    >
+                                        {isLoading ? (
+                                            <span className="flex items-center justify-center">
+                                                <svg className="animate-spin h-5 w-5 mr-2" viewBox="0 0 24 24">
+                                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                                                </svg>
+                                                Logging in...
+                                            </span>
+                                        ) : (
+                                            'Login'
+                                        )}
+                                    </button>
+                                    <span className="flex-1 text-center text-gray-600">or</span>
+                                    <button
+                                        type="button"
+                                        className="flex-1 bg-gray-200 text-gray-800 py-2 rounded hover:bg-gray-300 transition duration-300"
+                                        onClick={() => navigate('/register')}
+                                    >
+                                        Enroll
+                                    </button>
                                 </div>
-
-
-
+                                {loginError && (
+                                    <div className="text-red-500 text-sm text-center">{loginError}</div>
+                                )}
                             </div>
-
-
                         </form>
                     </div>
                 </div>
