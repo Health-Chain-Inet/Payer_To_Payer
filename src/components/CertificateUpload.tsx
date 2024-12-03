@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, { useEffect } from 'react';
 import { Upload, CheckCircle, AlertCircle, ArrowDown, } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 
@@ -28,7 +28,7 @@ export default function CertificateUpload({ onUpload }: CertificateUploadProps) 
   const [uploading, setUploading] = React.useState(false);
   const [certificate, setCertificate] = React.useState('');
   const [msg, setmsg] = React.useState('');
-  const [certmsg, setcertmsg] =  React.useState('')
+  const [certmsg, setcertmsg] = React.useState('')
   const [payerDetails, setPayerDetails] = React.useState<PayerDetails | null>([]);
   const [isLoading, setIsLoading] = React.useState(false);
 
@@ -73,7 +73,7 @@ export default function CertificateUpload({ onUpload }: CertificateUploadProps) 
   }, [setValue]);
 
 
- 
+
   const onDownload = () => {
     const email = localStorage.getItem('email');
     console.log('1. Email retrieved:', email);
@@ -151,9 +151,9 @@ export default function CertificateUpload({ onUpload }: CertificateUploadProps) 
   };
 
   const onSubmit = async (cdata: any) => {
-  
+
     console.log("cdata=", cdata)
-    console.log("certificate read start= ",  cdata.certificate[0])
+    console.log("certificate read start= ", cdata.certificate[0])
     setUploading(true);
 
     try {
@@ -161,13 +161,13 @@ export default function CertificateUpload({ onUpload }: CertificateUploadProps) 
 
       const user = localStorage.getItem('user')
       const email = localStorage.getItem('email')
- 
+
       const postdata = {
-        certcontent: {certificate}, 
-        user: user, 
-        email: email, 
+        certcontent: { certificate },
+        user: user,
+        email: email,
         endpoint: cdata.endpoint
-      } 
+      }
 
       const result = await fetch('http://localhost:3001/certificate/uploadcertificate', {
         method: 'POST',
@@ -176,7 +176,7 @@ export default function CertificateUpload({ onUpload }: CertificateUploadProps) 
 
       console.log('result=', result);
       setmsg('file uploaded')
-      setTimeout(()=>{
+      setTimeout(() => {
         setmsg('')
       }, 2500)
 
@@ -187,22 +187,22 @@ export default function CertificateUpload({ onUpload }: CertificateUploadProps) 
     setUploading(false);
   };
 
-  
-    // Function to format the date to 'dd-mm-yyyy'
-    const formatDate = (date) => {
-      const d = new Date(date);
-      const day = d.getDate().toString().padStart(2, '0'); // Ensure day is two digits
-      const month = (d.getMonth() + 1).toString().padStart(2, '0'); // Get month and ensure it's two digits
-      const year = d.getFullYear();
-      // Get the hours, minutes, and seconds
-      const hours = d.getHours().toString().padStart(2, '0');
-      const minutes = d.getMinutes().toString().padStart(2, '0');
-      const seconds = d.getSeconds().toString().padStart(2, '0');
 
-      // Return formatted date and time
-      return `${day}-${month}-${year} ${hours}:${minutes}:${seconds}`;
-    };
-  
+  // Function to format the date to 'dd-mm-yyyy'
+  const formatDate = (date) => {
+    const d = new Date(date);
+    const day = d.getDate().toString().padStart(2, '0'); // Ensure day is two digits
+    const month = (d.getMonth() + 1).toString().padStart(2, '0'); // Get month and ensure it's two digits
+    const year = d.getFullYear();
+    // Get the hours, minutes, and seconds
+    const hours = d.getHours().toString().padStart(2, '0');
+    const minutes = d.getMinutes().toString().padStart(2, '0');
+    const seconds = d.getSeconds().toString().padStart(2, '0');
+
+    // Return formatted date and time
+    return `${day}-${month}-${year} ${hours}:${minutes}:${seconds}`;
+  };
+
 
 
   return (
@@ -220,11 +220,11 @@ export default function CertificateUpload({ onUpload }: CertificateUploadProps) 
                   <div className="flex text-sm text-gray-600">
                     <label className="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500">
                       <span>Upload a file</span>
-                      <input 
+                      <input
                         {...register('certificate', { required: true })}
                         type="file"
                         className="sr-only"
-                        accept=".pem,.crt,.cer" 
+                        accept=".pem,.crt,.cer"
                         onChange={handleFileUpload}
                       />
                     </label>
@@ -244,20 +244,20 @@ export default function CertificateUpload({ onUpload }: CertificateUploadProps) 
                 Certificate is required
               </div>
             )}
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Payer Endpoint URL/ PAYER BASE URL
-                </label>
-                <input
-                  type="url"
-                  {...register('endpoint', { required: true })}
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                  placeholder="https://api.example.com"
-                />
-                {errors.endpoint && (
-                  <p className="mt-2 text-sm text-red-600">Endpoint URL is required</p>
-                )}
-              </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Payer Endpoint URL/ PAYER BASE URL
+              </label>
+              <input
+                type="url"
+                {...register('endpoint', { required: true })}
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                placeholder="https://api.example.com"
+              />
+              {errors.endpoint && (
+                <p className="mt-2 text-sm text-red-600">Endpoint URL is required</p>
+              )}
+            </div>
 
             <button
               type="submit"
@@ -285,76 +285,76 @@ export default function CertificateUpload({ onUpload }: CertificateUploadProps) 
       {/* Payer Details Display Section - Always Visible */}
       {payerDetails && (
 
-<div className="bg-white shadow sm:rounded-lg p-6 mt-4">
-  <h2 className="text-xl font-semibold text-gray-900 mb-4">Certificate Details</h2>
-  <div className="flex-grow overflow-x-auto bg-gray-50 rounded-lg">
-       {certmsg}
-    </div>   
-  <div className="flex gap-4">
- 
-    <div className="flex-grow overflow-x-auto bg-gray-50 rounded-lg">
-      <table className="min-w-full">
-        <thead>
-          <tr>
-            <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Payer Name</th>
-            {/* <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Admin Name</th> */}
-            <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Certificate Status</th>
-            <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Valid From</th>
-            <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Valid Until</th>
-          </tr>
-        </thead>
+        <div className="bg-white shadow sm:rounded-lg p-6 mt-4">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">Certificate Details</h2>
+          <div className="flex-grow overflow-x-auto bg-gray-50 rounded-lg">
+            {certmsg}
+          </div>
+          <div className="flex gap-4">
+
+            <div className="flex-grow overflow-x-auto bg-gray-50 rounded-lg">
+              <table className="min-w-full">
+                <thead>
+                  <tr>
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Payer Name</th>
+                    {/* <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Admin Name</th> */}
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Certificate Status</th>
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Valid From</th>
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Valid Until</th>
+                  </tr>
+                </thead>
 
 
 
-        <tbody>
-          {Array.isArray(payerDetails) && payerDetails.map((p, index) => (
+                <tbody>
+                  {Array.isArray(payerDetails) && payerDetails.map((p, index) => (
 
-            <tr key={p.payer_id || index}>
-              <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                {p.payer_name || 'N/A'}
-              </td>
-              {/* <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
+                    <tr key={p.payer_id || index}>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
+                        {p.payer_name || 'N/A'}
+                      </td>
+                      {/* <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
               {payerDetails.adm_name}
             </td> */}
-              <td className="px-6 py-4 whitespace-nowrap">
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                  {p.certificate_verified ? 'Verified' : 'Not Verified'}
-                </span>
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                {formatDate(p.validity_notbefore) || 'No Data'}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                {formatDate(p.validity_notafter) || 'No data'}
-              </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                          {p.certificate_verified ? 'Verified' : 'Not Verified'}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
+                        {formatDate(p.validity_notbefore) || 'No Data'}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
+                        {formatDate(p.validity_notafter) || 'No data'}
+                      </td>
 
-              <td className="flex gap-2 items-center">
+                      <td className="flex gap-2 items-center">
 
-                <button  title="Verify" className="flex justify-center py-1 px-1 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:bg-red-400">
-                  <CheckCircle className="h-4 w-4 mr-1" />
-                  {/* Verify <br /> Certificate */}
-                </button>
+                        <button title="Verify" className="flex justify-center py-1 px-1 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:bg-red-400">
+                          <CheckCircle className="h-4 w-4 mr-1" />
+                          {/* Verify <br /> Certificate */}
+                        </button>
 
-                <button  title="Download" onClick={onDownload} className="flex justify-center py-1 px-1 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:bg-green-400">
-                  <ArrowDown className="h-4 w-4 mr-1" />
-                  {/* Download <br /> Certificate */}
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-
-
-      </table>
-    </div>
+                        <button title="Download" onClick={onDownload} className="flex justify-center py-1 px-1 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:bg-green-400">
+                          <ArrowDown className="h-4 w-4 mr-1" />
+                          {/* Download <br /> Certificate */}
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
 
 
+              </table>
+            </div>
 
-  </div>
-</div>
 
 
-)}
+          </div>
+        </div>
+
+
+      )}
     </div>
   );
 }
