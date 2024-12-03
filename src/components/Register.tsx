@@ -56,6 +56,8 @@ const RegisterPage: React.FC = () => {
     const [uploading, setUploading] = React.useState<boolean>(false);
     const [formData, setFormData] = React.useState<any>({});
     const [confirmmsg, setconfirmmsg] = React.useState<any>();
+    const [isDisabled, setIsDisabled] = React.useState(false);
+
 
     const location = useLocation();
     const locationState = location.state as LocationState;
@@ -89,7 +91,6 @@ const RegisterPage: React.FC = () => {
         //navigate('/success');
         let formdata = new URLSearchParams(data.administration).toString();
         console.log('formdata=', formdata)
-        document.getElementById("btnConfirm").disabled = true;
 
         await fetch(enrollurl, {
             method: 'POST',
@@ -695,12 +696,18 @@ const RegisterPage: React.FC = () => {
                             <button
                                 type="button"
                                 id="btnConfirm"
-                                onClick={() => {
+                                disabled={isDisabled}
+                                onClick={(event) => {
                                     //console.log('Form submitted:', formData);
-                                    return onSubmitEnrollment(event, formData);
-                                    //navigate('/success');
+                                    onSubmitEnrollment(event, formData);
+                                    setIsDisabled(true);
+                                    (event.target as HTMLButtonElement).disabled = true;
+         
+                                                               //navigate('/success');
                                 }}
-                                className="flex-1 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                className="flex-1 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm 
+                                font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 
+                                focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-300 disabled:cursor-not-allowed"
                             >
                                 Confirm
                             </button>
@@ -708,7 +715,8 @@ const RegisterPage: React.FC = () => {
                         </div>
                         <div className="flex justify-between space-x-12 mt-6">
                         <br /> 
-                        <div className="ml-auto">{confirmmsg}</div>
+                        <div className="text-green-600 font-medium text-sm mt-4 text-center">
+                            {confirmmsg}</div>
 
                
                         </div>
