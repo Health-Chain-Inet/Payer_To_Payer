@@ -75,6 +75,7 @@ export default function CertificateUpload({ onUpload }: CertificateUploadProps) 
 
  
   const onDownload = () => {
+    console.log('on download start');
     const email = localStorage.getItem('email');
     console.log('1. Email retrieved:', email);
 
@@ -84,7 +85,7 @@ export default function CertificateUpload({ onUpload }: CertificateUploadProps) 
     }
 
     console.log('2. Starting fetch request');
-    fetch(`http://localhost:3001/directory/fetchcertificatedetails`, {
+    fetch(`http://localhost:3001/directory/downloadcertificate`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -98,8 +99,8 @@ export default function CertificateUpload({ onUpload }: CertificateUploadProps) 
       .then(json => {
         console.log('4. JSON data:', json);
         console.log('5. JSON type:', typeof json);
-
-        const jsonString = JSON.stringify(json, null, 2);
+        
+        const jsonString = JSON.stringify(json.data, null, 2);
         console.log('6. Formatted JSON string created');
 
         const blob = new Blob([jsonString], { type: 'application/json' });
@@ -246,7 +247,7 @@ export default function CertificateUpload({ onUpload }: CertificateUploadProps) 
             )}
               <div>
                 <label className="block text-sm font-medium text-gray-700">
-                  Payer Endpoint URL/ PAYER BASE URL
+                  Payer Endpoint URL/ Payer Base URL
                 </label>
                 <input
                   type="url"
