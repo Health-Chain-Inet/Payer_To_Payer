@@ -5,7 +5,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import config from '../config/config.js';
 
 interface LocationState {
-    initialStep?: 'organization' | 'administration' | 'review';
+    initialStep?: 'organization' | 'administration' | 'terms' | 'review';
     certificationData?: {
         certification: string;
         uploaded: boolean;
@@ -13,7 +13,7 @@ interface LocationState {
 }
 
 
-const StepTimeline: React.FC<{ activeStep: 'organization' | 'administration' | 'review' }> = ({ activeStep }) => {
+const StepTimeline: React.FC<{ activeStep: 'organization' | 'administration' | 'terms' | 'review' }> = ({ activeStep }) => {
     return (
         <div className="mb-6">
             <div className="flex items-center justify-between relative">
@@ -35,13 +35,25 @@ const StepTimeline: React.FC<{ activeStep: 'organization' | 'administration' | '
                     </span>
                     Administration Details
                 </div>
+
+                {/* Terms Step */}
+                <div className="flex-1 text-center">
+                    <span className={`block w-8 h-8 mx-auto rounded-full border-2 flex items-center justify-center mb-2 ${activeStep === 'terms' ? 'bg-indigo-600 text-white' : 'bg-white border-indigo-600 text-indigo-600'}`}>
+                        3
+                    </span>
+                    Terms & Conditions
+                </div>
+
                 {/* Review Step */}
                 <div className="flex-1 text-center">
                     <span className={`block w-8 h-8 mx-auto rounded-full border-2 flex items-center justify-center mb-2 ${activeStep === 'review' ? 'bg-indigo-600 text-white' : 'bg-white border-indigo-600 text-indigo-600'}`}>
-                        3
+                        4
                     </span>
                     Review and Confirm
                 </div>
+
+
+
             </div>
         </div>
     );
@@ -57,12 +69,13 @@ const RegisterPage: React.FC = () => {
     const [formData, setFormData] = React.useState<any>({});
     const [confirmmsg, setconfirmmsg] = React.useState<any>();
     const [isDisabled, setIsDisabled] = React.useState(false);
+    const [acceptedTerms, setAcceptedTerms] = React.useState(false);
 
 
     const location = useLocation();
     const locationState = location.state as LocationState;
 
-    const [activeStep, setActiveStep] = React.useState<'organization' | 'administration' | 'review'>(
+    const [activeStep, setActiveStep] = React.useState<'organization' | 'administration' | 'terms' | 'review'>(
         locationState?.initialStep || 'organization'
     );
 
@@ -109,7 +122,7 @@ const RegisterPage: React.FC = () => {
                 else {
                     setconfirmmsg('User Already exists')
                     //document.getElementById("btnConfirm").disabled = false;
-                  
+
                 }
             })
             .catch(error => {
@@ -544,6 +557,7 @@ const RegisterPage: React.FC = () => {
                                 <button
                                     type="submit"
                                     disabled={uploading}
+                                    onClick={() => setActiveStep('terms')}
                                     className="flex-1 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-400"
                                 >
                                     Next
@@ -551,6 +565,53 @@ const RegisterPage: React.FC = () => {
                             </div>
                         </div>
                     </form>
+                )}
+
+
+
+                {/* Terms Step Condition */}
+                {activeStep === 'terms' && (
+                    <div className="space-y-4">
+                        <h2 className="text-lg font-semibold text-gray-800 mb-4">Terms and Conditions</h2>
+
+                        <div className="border border-gray-300 rounded-md p-4 h-64 overflow-y-auto">
+                            {/* Add your terms content here */}
+                            <p className="text-sm text-gray-600">
+                                Please read and accept our terms and conditions...
+                            </p>
+                        </div>
+
+                        <div className="flex items-start mt-4">
+                            <input
+                                type="checkbox"
+                                id="accept-terms"
+                                checked={acceptedTerms}
+                                onChange={(e) => setAcceptedTerms(e.target.checked)}
+                                className="mt-1 mr-2"
+                            />
+                            <label htmlFor="accept-terms" className="text-sm text-gray-700">
+                                I have read and agree to the terms and conditions
+                            </label>
+                        </div>
+
+                        <div className="flex justify-between space-x-4 mt-6">
+                            <button
+                                type="button"
+                                onClick={() => setActiveStep('administration')}
+                                className="flex-1 py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                            >
+                                Previous
+                            </button>
+                            <button
+                                type="button"
+                                disabled={!acceptedTerms}
+                                onClick={() => setActiveStep('review')}
+                                className="flex-1 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400"
+                            >
+                                Next
+                            </button>
+                        </div>
+                    </div>
                 )}
 
 
@@ -688,7 +749,7 @@ const RegisterPage: React.FC = () => {
                         <div className="flex justify-between space-x-4 mt-6">
                             <button
                                 type="button"
-                                onClick={() => setActiveStep('administration')}
+                                onClick={() => setActiveStep('terms')}
                                 className="flex-1 py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                             >
                                 Previous
@@ -702,8 +763,8 @@ const RegisterPage: React.FC = () => {
                                     onSubmitEnrollment(event, formData);
                                     setIsDisabled(true);
                                     (event.target as HTMLButtonElement).disabled = true;
-         
-                                                               //navigate('/success');
+
+                                    //navigate('/success');
                                 }}
                                 className="flex-1 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm 
                                 font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 
@@ -711,14 +772,14 @@ const RegisterPage: React.FC = () => {
                             >
                                 Confirm
                             </button>
-             
+
                         </div>
                         <div className="flex justify-between space-x-12 mt-6">
-                        <br /> 
-                        <div className="text-green-600 font-medium text-sm mt-4 text-center">
-                            {confirmmsg}</div>
+                            <br />
+                            <div className="text-green-600 font-medium text-sm mt-4 text-center">
+                                {confirmmsg}</div>
 
-               
+
                         </div>
                     </div>
 
