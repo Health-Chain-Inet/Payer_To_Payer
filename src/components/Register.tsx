@@ -85,15 +85,34 @@ const RegisterPage: React.FC = () => {
         setActiveStep('administration'); // Move to administration details step
     };
 
+
+
     const onSubmitAdministration = (data: any) => {
         console.log('Administration Details Submitted:', data);
         setUploading(true);
+
+        setFormData((prev: any) => ({
+            ...prev,
+            administration: {
+                adm_name: data.adm_name,
+                adm_phone: data.adm_phone,
+                adm_email: data.adm_email,
+                adm_password: data.adm_password,
+                org_ein: data.org_ein,
+                org_website: data.org_website,
+                org_terms: data.org_terms,
+                privacy_policy: data.privacy_policy
+            }
+        }));
+
         setTimeout(() => {
             setUploading(false);
-            setFormData((prev) => ({ ...prev, administration: data }));
-            setActiveStep('review'); // Move to review step after submission
-        });
+            setActiveStep('terms'); // Move to terms step
+        }, 500);
     };
+
+
+
 
     const onSubmitEnrollment = async (e: any, data: any) => {
         e.preventDefault();
@@ -557,11 +576,11 @@ const RegisterPage: React.FC = () => {
                                 <button
                                     type="submit"
                                     disabled={uploading}
-                                    onClick={() => setActiveStep('terms')}
                                     className="flex-1 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-400"
                                 >
                                     Next
                                 </button>
+
                             </div>
                         </div>
                     </form>
