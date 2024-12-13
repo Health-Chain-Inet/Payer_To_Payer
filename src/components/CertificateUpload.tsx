@@ -1,6 +1,7 @@
 import React, {useEffect} from 'react';
 import { Upload, CheckCircle, AlertCircle, ArrowDown, } from 'lucide-react';
 import { useForm } from 'react-hook-form';
+import config from '../config/config.js';
 
 
 interface CertificateUploadProps {
@@ -100,7 +101,7 @@ export default function CertificateUpload({ onUpload }: CertificateUploadProps) 
         console.log('4. JSON data:', json);
         console.log('5. JSON type:', typeof json);
         
-        const jsonString = JSON.stringify(json.data, null, 2);
+        const jsonString = JSON.stringify(json.message, null, 2);
         console.log('6. Formatted JSON string created');
 
         const blob = new Blob([jsonString], { type: 'application/json' });
@@ -111,7 +112,7 @@ export default function CertificateUpload({ onUpload }: CertificateUploadProps) 
 
         const link = document.createElement('a');
         link.href = url;
-        link.download = 'certificate.json';
+        link.download = 'certificate.txt';
         console.log('9. Download link created');
 
         document.body.appendChild(link);
@@ -203,14 +204,73 @@ export default function CertificateUpload({ onUpload }: CertificateUploadProps) 
       // Return formatted date and time
       return `${day}-${month}-${year} ${hours}:${minutes}:${seconds}`;
     };
+
+
+    const generateCertificate = async () => {
+      setmsg('Creating Certificate Please wait.. ')
+     
+      const email = localStorage.getItem('email');
+      const fetchmycerturl = config.apiUrl + '/directory/generatecertificate'
+      console.log('email:', email)
+      const postdata = {
+        email: email
+      }
+      await fetch(fetchmycerturl, {
+        method: 'POST',
+        body: JSON.stringify(postdata), 
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }).then(response => response.json()).then(async(data) => {
+      console.log('response = ',data)
+      setmsg('Certificate Created . refreshing details')
+      await fetchPayerDetails()
+      setTimeout(()=>{
+        setmsg('')
+      }, 3500)
+    })
+    .catch(error => console.error('Error:', error));
+      
+    }
+
+    const verifyCertificate = async(payer_id:any, cert_type:any) => {
+        console.log('payer_id=', payer_id)
+        console.log('cert_type=', cert_type)
+        let connectapiurl = config.apiUrl + '/directory/';
+        connectapiurl += (cert_type == 'client')?'/validateclient?payer_id='+payer_id:'/validateclient?payer_id='+payer_id;
+        setmsg('Verifying certificate. Please wait..')
+        await fetch(connectapiurl,{method:'get'})
+        .then(response => response.json()).then(async(data)=>{
+          console.log('data=', data);
+          setmsg('Certificate verified')
+          if(data.status == 200 && data.data.status == 200) {
+            setmsg(data.message + ' - '+ data.data.msg)
+          }
+          setTimeout(() => { setmsg('') }, 5000)
+        })
+        .catch(error => {
+          setmsg(error)
+          setTimeout(() => { setmsg('') }, 5000)
+          console.log('Error:', error)
+        });
+    }
   
 
 
   return (
     <div className="space-y-6">
       <div className="bg-white shadow sm:rounded-lg p-6">
+      <div className="space-y-4	">
+        <button
+          type="button"
+          value="Generate Certificate"
+          onClick={generateCertificate}
+          className={`h-10 px-5 m-2 text-indigo-100 transition-colors duration-150 bg-indigo-700 rounded-lg focus:shadow-outline hover:bg-indigo-800` }>
+          Generate Certificate
+        </button>
+        </div>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="space-y-4">
+          <div className="space-y-4 hidden">
             <div>
               <label className="block text-sm font-medium text-gray-700">
                 Public Certificate (PEM format)
@@ -299,6 +359,7 @@ export default function CertificateUpload({ onUpload }: CertificateUploadProps) 
           <tr>
             <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Payer Name</th>
             {/* <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Admin Name</th> */}
+            <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Certificate Type</th>
             <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Certificate Status</th>
             <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Valid From</th>
             <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Valid Until</th>
@@ -310,9 +371,12 @@ export default function CertificateUpload({ onUpload }: CertificateUploadProps) 
         <tbody>
           {Array.isArray(payerDetails) && payerDetails.map((p, index) => (
 
-            <tr key={p.payer_id || index}>
+            <tr key={`${p.payer_id}-${index}`}>
               <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
                 {p.payer_name || 'N/A'}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
+              {p.cert_type || 'N/A'}
               </td>
               {/* <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
               {payerDetails.adm_name}
@@ -331,7 +395,7 @@ export default function CertificateUpload({ onUpload }: CertificateUploadProps) 
 
               <td className="flex gap-2 items-center">
 
-                <button  title="Verify" className="flex justify-center py-1 px-1 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:bg-red-400">
+                <button  title="Verify" onClick={() => verifyCertificate(p.payer_id, p.cert_type)} className="flex justify-center py-1 px-1 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:bg-red-400">
                   <CheckCircle className="h-4 w-4 mr-1" />
                   {/* Verify <br /> Certificate */}
                 </button>

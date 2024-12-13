@@ -5,7 +5,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import config from '../config/config.js';
 
 interface LocationState {
-    initialStep?: 'organization' | 'administration' | 'terms' | 'review';
+    initialStep?: 'organization' | 'administration' | 'review';
     certificationData?: {
         certification: string;
         uploaded: boolean;
@@ -13,7 +13,7 @@ interface LocationState {
 }
 
 
-const StepTimeline: React.FC<{ activeStep: 'organization' | 'administration' | 'terms' | 'review' }> = ({ activeStep }) => {
+const StepTimeline: React.FC<{ activeStep: 'organization' | 'administration' | 'review' }> = ({ activeStep }) => {
     return (
         <div className="mb-6">
             <div className="flex items-center justify-between relative">
@@ -35,25 +35,13 @@ const StepTimeline: React.FC<{ activeStep: 'organization' | 'administration' | '
                     </span>
                     Administration Details
                 </div>
-
-                {/* Terms Step */}
-                <div className="flex-1 text-center">
-                    <span className={`block w-8 h-8 mx-auto rounded-full border-2 flex items-center justify-center mb-2 ${activeStep === 'terms' ? 'bg-indigo-600 text-white' : 'bg-white border-indigo-600 text-indigo-600'}`}>
-                        3
-                    </span>
-                    Terms & Conditions
-                </div>
-
                 {/* Review Step */}
                 <div className="flex-1 text-center">
                     <span className={`block w-8 h-8 mx-auto rounded-full border-2 flex items-center justify-center mb-2 ${activeStep === 'review' ? 'bg-indigo-600 text-white' : 'bg-white border-indigo-600 text-indigo-600'}`}>
-                        4
+                        3
                     </span>
                     Review and Confirm
                 </div>
-
-
-
             </div>
         </div>
     );
@@ -69,55 +57,35 @@ const RegisterPage: React.FC = () => {
     const [formData, setFormData] = React.useState<any>({});
     const [confirmmsg, setconfirmmsg] = React.useState<any>();
     const [isDisabled, setIsDisabled] = React.useState(false);
-    const [acceptedTerms, setAcceptedTerms] = React.useState(false);
 
 
     const location = useLocation();
     const locationState = location.state as LocationState;
 
-    const [activeStep, setActiveStep] = React.useState<'organization' | 'administration' | 'terms' | 'review'>(
+    const [activeStep, setActiveStep] = React.useState<'organization' | 'administration' | 'review'>(
         locationState?.initialStep || 'organization'
     );
 
     const onSubmitOrganization = (data: any) => {
         console.log('Organization Details Submitted:', data);
-        setFormData((prev:any) => ({ ...prev, organization: data }));
+        setFormData((prev) => ({ ...prev, organization: data }));
         setActiveStep('administration'); // Move to administration details step
     };
-
-
 
     const onSubmitAdministration = (data: any) => {
         console.log('Administration Details Submitted:', data);
         setUploading(true);
-        setFormData((prev:any) => ({ ...prev, administration: data }));
-        // setFormData((prev: any) => ({
-        //     ...prev,
-        //     administration: {
-        //         adm_name: data.adm_name,
-        //         adm_phone: data.adm_phone,
-        //         adm_email: data.adm_email,
-        //         adm_password: data.adm_password,
-        //         org_ein: data.org_ein,
-        //         org_website: data.org_website,
-        //         org_terms: data.org_terms,
-        //         privacy_policy: data.privacy_policy
-        //     }
-        // }));
-
         setTimeout(() => {
             setUploading(false);
-            setActiveStep('terms'); // Move to terms step
-        }, 500);
+            setFormData((prev) => ({ ...prev, administration: data }));
+            setActiveStep('review'); // Move to review step after submission
+        });
     };
-
-
-
 
     const onSubmitEnrollment = async (e: any, data: any) => {
         e.preventDefault();
         setconfirmmsg('..Wait Submitting information')
-        console.log('Enrollment Submitted:', data);
+        console.log('Enrollment Submitting:', data);
         let enrollurl = config.apiUrl + '/enroll/enroll';
         console.log('enrollurl=', enrollurl)
         //navigate('/success');
@@ -141,7 +109,7 @@ const RegisterPage: React.FC = () => {
                 else {
                     setconfirmmsg('User Already exists')
                     //document.getElementById("btnConfirm").disabled = false;
-
+                  
                 }
             })
             .catch(error => {
@@ -580,70 +548,9 @@ const RegisterPage: React.FC = () => {
                                 >
                                     Next
                                 </button>
-
                             </div>
                         </div>
                     </form>
-                )}
-
-
-
-                {/* Terms Step Condition */}
-                {activeStep === 'terms' && (
-                    <div className="space-y-4">
-                        <h2 className="text-lg font-semibold text-gray-800 mb-4">Terms and Conditions</h2>
-
-                        <div className="border border-gray-300 rounded-md p-4 h-64 overflow-y-auto">
-                            {/* Add your terms content here */}
-                            <p className="text-sm text-gray-600">
-                                Please read and accept our terms and conditions...
-                                <ol>
-                                    <li>The participant must be a HIPAA covered entity or business associate operating on behalf
-                                         of a Payer Covered Entity.</li>
-                                    <li>Any healthcare organization or institution that collects protected health information (PHI) must be HIPAA compliant. 
-                                        This includes doctors, dentists, psychologists, physiologists, clinics, pharmacies, nursing homes, etc.</li>
-                                    <li>Individuals, businesses, or service providers who do not transmit patient health data electronically 
-                                        or do not qualify as healthcare providers, healthcare plans, or
-                                         healthcare clearinghouses are not HIPAA-covered entities.</li>
-                                    <li>HHS Office for Civil Rights is responsible for enforcing the Privacy and Security Rules. 
-                                        Enforcement of the Privacy Rule began April 14, 2003 for most HIPAA covered entities.</li>
-                                    <li>The HIPAA Privacy Rule directly applies to covered entities—i.e., health plans, healthcare clearinghouses, 
-                                        and healthcare providers—and is concerned with the protection of individually identifiable health information.</li>
-                                </ol>
-                            </p>
-                        </div>
-
-                        <div className="flex items-start mt-4">
-                            <input
-                                type="checkbox"
-                                id="accept-terms"
-                                checked={acceptedTerms}
-                                onChange={(e) => setAcceptedTerms(e.target.checked)}
-                                className="mt-1 mr-2"
-                            />
-                            <label htmlFor="accept-terms" className="text-sm text-gray-700">
-                                I have read and agree to the terms and conditions
-                            </label>
-                        </div>
-
-                        <div className="flex justify-between space-x-4 mt-6">
-                            <button
-                                type="button"
-                                onClick={() => setActiveStep('administration')}
-                                className="flex-1 py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
-                            >
-                                Previous
-                            </button>
-                            <button
-                                type="button"
-                                disabled={!acceptedTerms}
-                                onClick={() => setActiveStep('review')}
-                                className="flex-1 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400"
-                            >
-                                Next
-                            </button>
-                        </div>
-                    </div>
                 )}
 
 
@@ -781,7 +688,7 @@ const RegisterPage: React.FC = () => {
                         <div className="flex justify-between space-x-4 mt-6">
                             <button
                                 type="button"
-                                onClick={() => setActiveStep('terms')}
+                                onClick={() => setActiveStep('administration')}
                                 className="flex-1 py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                             >
                                 Previous
@@ -791,12 +698,12 @@ const RegisterPage: React.FC = () => {
                                 id="btnConfirm"
                                 disabled={isDisabled}
                                 onClick={(event) => {
-                                    console.log('Form submitted:', formData);
+                                    //console.log('Form submitted:', formData);
                                     onSubmitEnrollment(event, formData);
                                     setIsDisabled(true);
                                     (event.target as HTMLButtonElement).disabled = true;
-
-                                    //navigate('/success');
+         
+                                                               //navigate('/success');
                                 }}
                                 className="flex-1 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm 
                                 font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 
@@ -804,14 +711,14 @@ const RegisterPage: React.FC = () => {
                             >
                                 Confirm
                             </button>
-
+             
                         </div>
                         <div className="flex justify-between space-x-12 mt-6">
-                            <br />
-                            <div className="text-green-600 font-medium text-sm mt-4 text-center">
-                                {confirmmsg}</div>
+                        <br /> 
+                        <div className="text-green-600 font-medium text-sm mt-4 text-center">
+                            {confirmmsg}</div>
 
-
+               
                         </div>
                     </div>
 

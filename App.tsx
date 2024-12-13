@@ -4,6 +4,7 @@ import Layout from './components/Layout';
 import PayerDirectory from './components/PayerDirectory';
 import CertificateUpload from './components/CertificateUpload';
 import PayerConnection from './components/PayerConnection';
+import Dashboard from './components/Dashboard';
 import CertificateValidator from './components/CertificateValidator';
 import TrustFramework from './components/TrustFramework';
 import Attestation from './components/Attestation';
@@ -49,8 +50,9 @@ export default function App() {
       
         <Routes>
           <Route path="/" element={<Layout />}>
-            <Route index element={<Navigate to="/directory" replace />} />
+            <Route index element={<Navigate to="/dashboard" replace />} />
             <Route path="directory" element={<PayerDirectory />} />
+            <Route path="dashboard" element={<Dashboard />} />
             <Route path="certificates" element={<CertificateUpload />} />
             <Route path="connections" element={<PayerConnection />} />
             <Route path="validate" element={<CertificateValidator />} />

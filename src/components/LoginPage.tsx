@@ -98,15 +98,18 @@ const LoginPage: React.FC = () => {
             const data = await response.json();
 
             if (data.status === 200) {
+                //console.log(data.message)
                 localStorage.setItem('user', data.message.adm_name);
                 localStorage.setItem('email', data.message.adm_email);
+                localStorage.setItem('payer_id', data.message.payer_id);
 
                 setGlobalVariable({
                     user: data.message.adm_name,
-                    email: data.message.adm_email
+                    email: data.message.adm_email,
+                    payer_id: data.message.payer_id
                 });
 
-                navigate('/directory');
+                navigate('/dashboard');
             } else {
                 setLoginError('Invalid Username or Password');
             }

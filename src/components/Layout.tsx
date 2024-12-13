@@ -10,11 +10,14 @@ import {
   Settings,
   FileText,
   Network,
-  Lock
+  Lock,
+  Home,
+  Check
 } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 
 import Logo from "../../dist/assets/hclogo.png"
+import Dashboard from './Dashboard';
 
 export default function Layout() {
   const { user, logout } = useAuthStore();
@@ -22,7 +25,10 @@ export default function Layout() {
   const navigate = useNavigate(); //Initialize the navigate function
 
   const navigation = [
+    { name: 'Dashboard', href: '/dashboard', icon: Home },
     { name: 'Payer Directory', href: '/directory', icon: Users },
+    { name: 'Payer Connect', href: '/payerconnect', icon: Network },
+    { name: 'Payer Approvals', href: '/payerapprovals', icon: Check },
     { name: 'Certificate Management', href: '/certificates', icon: Shield },
     { name: 'Certificate Validation', href: '/validate', icon: CheckSquare },
     { name: 'Active Connections', href: '/connections', icon: Network },
@@ -51,12 +57,13 @@ export default function Layout() {
                 <span className="ml-2 text-xl font-bold text-gray-900">P2P Connect</span> */}
                 <img className='w-full h-full rounded-full' src={Logo} alt="Health-chain logo" />
                 {/* <span className="ml-2 text-xl font-bold text-gray-900">P2P Connect</span> */}
+
               </div>
             </div>
             <div className="flex items-center">
               <div className="flex-shrink-0">
                 <span className="text-sm text-gray-500 mr-4">
-                  {localStorage.getItem('email')}
+                  User: {localStorage.getItem('user')} 
                 </span>
 
 
@@ -66,7 +73,10 @@ export default function Layout() {
                 >
                   <LogOut className="h-4 w-4 mr-2" />
                   Logout
-                </button>
+                </button> <br />
+                <span className="text-sm text-gray-500 mr-4">
+                  {localStorage.getItem('email')}
+                </span>
               </div>
             </div>
           </div>
@@ -75,9 +85,9 @@ export default function Layout() {
 
       <div className="flex">
         {/* Sidebar Navigation */}
-        <div className="w-64 bg-white h-[calc(100vh-4rem)] border-r border-gray-200">
+        <div className="w-60 bg-white h-[calc(100vh-4rem)] border-r border-gray-200">
           <nav className="mt-5 px-2">
-            <div className="space-y-1">
+            <div className="space-y-2">
               {navigation.map((item) => {
                 const Icon = item.icon;
                 const isActive = location.pathname === item.href;
@@ -95,7 +105,9 @@ export default function Layout() {
                         } mr-3 flex-shrink-0 h-6 w-6`}
                     />
                     {item.name}
+                  
                   </Link>
+                  
                 );
               })}
             </div>

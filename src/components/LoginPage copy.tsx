@@ -131,6 +131,7 @@ const LoginPage: React.FC = () => {
 
                         localStorage.setItem('user', data.message.adm_name)
                         localStorage.setItem('email', data.message.adm_email)
+                        localStorage.setItem('payer_id', data.message.payer_id)
 
                         setGlobalVariable({ user: localStorage.getItem('user'), email: localStorage.getItem('email') })
                         setLoginError("");

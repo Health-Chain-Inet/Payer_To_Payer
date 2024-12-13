@@ -6,6 +6,8 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { GlobalContext } from './GlobalContext';
 import { AdminModal } from './AdminModal';
+import config from '../config/config.js';
+
 
 interface Payer {
   payer_id: string;
@@ -17,9 +19,10 @@ interface Payer {
   payer_addr2: string;
   certificate_uploaded: boolean;
   certificate_verified: boolean;
+  certificates_verified_count: BigInteger;
 }
 
-interface PayerDirectoryState {
+interface PayerConnectState {
   payers: Payer[];
   searchTerm: string;
   showAdminModal: boolean;
@@ -28,7 +31,7 @@ interface PayerDirectoryState {
   error: string | null;
 }
 
-const INITIAL_STATE: PayerDirectoryState = {
+const INITIAL_STATE: PayerConnectState = {
   payers: [],
   searchTerm: '',
   showAdminModal: false,
@@ -37,10 +40,12 @@ const INITIAL_STATE: PayerDirectoryState = {
   error: null
 };
 
-export default function PayerDirectory() {
+export default function PayerConnect() {
   const { globalVariable } = React.useContext(GlobalContext);
   const navigate = useNavigate();
-  const [state, setState] = useState<PayerDirectoryState>(INITIAL_STATE);
+  const [state, setState] = useState<PayerConnectState>(INITIAL_STATE);
+
+  const [msg, setmsg] = React.useState('');
 
   // Memoized search filter
   const filteredPayers = useMemo(() => {
@@ -100,6 +105,31 @@ export default function PayerDirectory() {
     fetchPayers();
   }, [navigate, fetchPayers]);
 
+
+  const payerconnectinit = async(opid, opemail) => {
+    const npemail = localStorage.getItem('email')
+    if(npemail == opemail) {
+      alert('Cannot connect to your own payer');
+      setmsg('');
+      return;
+    }
+    setmsg('Connecting to old payer. Please wait..')
+    setTimeout(()=>{ setmsg('Validating Certificates. Please wait..') }, 2500)
+    const connectapiurl = config.apiUrl + '/discovery/nconnectpayer?ne='+npemail+'&opid='+opid;
+    console.log('payer connection started with = ', opid)
+    console.log('url=', connectapiurl);
+    await fetch(connectapiurl,{method: 'GET'})
+    .then(response => response.json()).then(async(data)=>{
+        console.log('data=', data);
+        setmsg('Refreshing data')
+        await fetchPayers();
+        setmsg('Connected with Old payer. Sent a reminder email to '+ opemail)
+        setTimeout(() => { setmsg('') }, 5000);
+
+    })
+    .catch(error => console.log('Error:', error));
+  }
+
   // Loading state
   if (state.isLoading) {
     return (
@@ -146,7 +176,7 @@ export default function PayerDirectory() {
         <div className="px-4 py-5 sm:px-6">
           <div className="flex justify-between items-center">
             <h3 className="text-lg leading-6 font-medium text-gray-900">
-              Payer Directory
+              Payer Connect
             </h3>
           </div>
 
@@ -168,6 +198,9 @@ export default function PayerDirectory() {
 
         {/* Payers Table */}
         <div className="border-t border-gray-200">
+          <div className="overflow-x-auto">
+            {msg}
+          </div>  
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
@@ -219,14 +252,18 @@ export default function PayerDirectory() {
                       </td>
                       <td className="px-6 py-4">
                         <button
-                          onClick={() => setState(prev => ({
-                            ...prev,
-                            selectedPayer: payer,
-                            showAdminModal: true
-                          }))}
+                          onClick={() => 
+                            {
+                              if(payer.certificates_verified_count == 2 ) {
+                              payerconnectinit(payer.payer_id, payer.adm_email);
+                            } else {
+                              alert('Count is 2');
+                            }
+                           }
+                          }
                           className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200"
                         >
-                          More Info
+                        Connect                        
                         </button>
                         
                       </td>
