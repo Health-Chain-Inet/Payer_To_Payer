@@ -85,9 +85,9 @@ export default function Layout() {
 
       <div className="flex">
         {/* Sidebar Navigation */}
-        <div className="w-60 bg-white h-[calc(100vh-4rem)] border-r border-gray-200">
-          <nav className="mt-5 px-2">
-            <div className="space-y-2">
+        <div className="w-60 bg-blue-100  font-bold  h-[calc(100vh-4rem)] border-r border-gray-200 ">
+          <nav className="mt-5 px-2  ">
+            <div className="space-y-2 ">
               {navigation.map((item) => {
                 const Icon = item.icon;
                 const isActive = location.pathname === item.href;
@@ -97,14 +97,16 @@ export default function Layout() {
                     to={item.href}
                     className={`${isActive
                       ? 'bg-indigo-50 border-indigo-500 text-indigo-700'
-                      : 'border-transparent text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                      : 'border-transparent text-white-600 hover:bg-gray-50 hover:text-orange-900'
                       } group flex items-center px-3 py-2 text-sm font-medium border-l-4`}
                   >
                     <Icon
-                      className={`${isActive ? 'text-indigo-500' : 'text-gray-400 group-hover:text-gray-500'
+                      className={`${isActive ? 'text-indigo-500' : 'text-black-400 group-hover:text-gray-500'
                         } mr-3 flex-shrink-0 h-6 w-6`}
                     />
-                    {item.name}
+                    {item.name} <br />
+                    <hr className="border-t border-gray-300 my-4 mx-0" />
+
                   
                   </Link>
                   
@@ -115,7 +117,7 @@ export default function Layout() {
         </div>
 
         {/* Main Content Area */}
-        <div className="flex-1 overflow-auto">
+        <div className="flex-1 overflow-auto  bg-gray-100">
           <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
             <Outlet />
           </main>

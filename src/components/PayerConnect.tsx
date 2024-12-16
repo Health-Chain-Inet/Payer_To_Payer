@@ -251,15 +251,23 @@ export default function PayerConnect() {
                         </div>
                       </td>
                       <td className="px-6 py-4">
+                        
                         <button
                           onClick={() => 
                             {
                               if(payer.certificates_verified_count == 2 ) {
-                              payerconnectinit(payer.payer_id, payer.adm_email);
-                            } else {
-                              alert('Count is 2');
+                                 const nemail = localStorage.getItem('email');
+                                  if(payer.adm_email != nemail) {
+                                    payerconnectinit(payer.payer_id, payer.adm_email);
+                                  } else {
+                                    setmsg('cannot connect to your self');
+                                    setTimeout(()=>{ setmsg('')  }, 5000);
+                                    alert('cannot connect to your self');
+                                  }
+                              } else {
+                                  alert('Count is 2');
+                              }
                             }
-                           }
                           }
                           className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200"
                         >

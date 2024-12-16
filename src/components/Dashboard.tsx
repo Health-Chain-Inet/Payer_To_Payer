@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-
 
 interface StatBoxProps {
   title: string;
@@ -64,16 +62,8 @@ const Dashboard = () => {
   const [isCertificateGenerationEnabled, setIsCertificateGenerationEnabled] = useState(false);
   const [certificateMessage, setCertificateMessage] = useState('');
   const [isCertificateGenerated, setIsCertificateGenerated] = useState(false);
-  const navigate = useNavigate();
 
   useEffect(() => {
-    const user = localStorage.getItem('user');
-    const email = localStorage.getItem('email');
-
-    if (!user || !email) {
-      navigate('/login');
-      return;
-    }
     // Check if the current date matches 13/12/2024
     const currentDate = new Date();
     const targetDate = new Date('2024-12-13'); 

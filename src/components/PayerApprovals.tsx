@@ -250,6 +250,7 @@ export default function PayerApprovals() {
                       <td className="px-6 py-4">
                         <button
                           onClick={() => 
+                            
                              PayerApprovalsinit(payer.new_payer_id)
                           }
                           className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200"
