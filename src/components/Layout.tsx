@@ -95,14 +95,24 @@ export default function Layout() {
                   <Link
                     key={item.name}
                     to={item.href}
-                    className={`${isActive
-                      ? 'bg-indigo-50 border-indigo-500 text-indigo-700'
-                      : 'border-transparent text-white-600 hover:bg-gray-50 hover:text-orange-900'
-                      } group flex items-center px-3 py-2 text-sm font-medium border-l-4`}
+                    className={`
+                      relative group flex items-center px-3 py-2 text-sm font-medium 
+                      transition-all duration-300 ease-in-out
+                      ${isActive 
+                        ? 'bg-indigo-600 text-white' 
+                        : 'text-gray-600 hover:text-gray-900'
+                      }
+                    `}
                   >
-                    <Icon
-                      className={`${isActive ? 'text-indigo-500' : 'text-black-400 group-hover:text-gray-500'
-                        } mr-3 flex-shrink-0 h-6 w-6`}
+                       <Icon
+                      className={`
+                        mr-3 flex-shrink-0 h-6 w-6 
+                        transition-colors duration-300 ease-in-out
+                        ${isActive 
+                          ? 'text-white' 
+                          : 'text-gray-400 group-hover:text-indigo-500'
+                        }
+                      `}
                     />
                     {item.name} <br />
                     <hr className="border-t border-gray-300 my-4 mx-0" />

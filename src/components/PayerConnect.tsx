@@ -44,8 +44,12 @@ export default function PayerConnect() {
   const { globalVariable } = React.useContext(GlobalContext);
   const navigate = useNavigate();
   const [state, setState] = useState<PayerConnectState>(INITIAL_STATE);
-
   const [msg, setmsg] = React.useState('');
+
+  // const areAllVerified = payers && Array.isArray(payers) && payers.length > 0
+  // && (payers.map((p)=>{  if(p.adm_email = localStorage.getItem('email')) { return (p.certificate_verified) } }))
+  // ? true
+  // : false;
 
   // Memoized search filter
   const filteredPayers = useMemo(() => {
@@ -75,11 +79,32 @@ export default function PayerConnect() {
       const data = await response.json();
 
       if (data.status === 200) {
-        setState(prev => ({
-          ...prev,
-          payers: data.message,
-          isLoading: false
-        }));
+        let areallverified = false;
+        if(data.message.length > 0) {
+          data.message.map((p)=>{
+
+            if(p.adm_email == localStorage.getItem('email')) {
+              if(p.certificates_verified_count == 2) {
+                areallverified = true;
+              }
+            }
+          })
+          console.log('areallverified=', areallverified);
+          if(areallverified) {
+            setState(prev => ({
+              ...prev,
+              payers: data.message,
+              isLoading: false
+            }));
+          } else {
+            setState(prev => ({
+              ...prev,
+              payers: [],
+              isLoading: false
+            }));
+          }
+        }
+
       } else {
         throw new Error('Invalid response status');
       }
@@ -103,6 +128,8 @@ export default function PayerConnect() {
     }
 
     fetchPayers();
+
+     // console.log('areallverified=', areAllVerified);
   }, [navigate, fetchPayers]);
 
 
@@ -185,9 +212,9 @@ export default function PayerConnect() {
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <Search className="h-5 w-5 text-gray-400" />
               </div>
-              <input
+              <input  
                 type="text"
-                className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md"
+                className="block w-full pl-10 pr-3 py-2 text-sm border-b border-gray-300 focus:border-indigo-500 focus:outline-none transition duration-150 ease-in-out"
                 placeholder="Search by payer name, email, or address..."
                 value={state.searchTerm}
                 onChange={(e) => setState(prev => ({ ...prev, searchTerm: e.target.value }))}
@@ -203,7 +230,7 @@ export default function PayerConnect() {
           </div>  
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+              <thead className="bg-blue-100">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Payer Name
@@ -221,7 +248,7 @@ export default function PayerConnect() {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {filteredPayers.length > 0 ? (
-                  filteredPayers.map((payer) => (
+                  filteredPayers.map((payer) => (payer.adm_email != localStorage.getItem('email')) && (
                     <tr key={payer.payer_id} className="hover:bg-gray-50">
                       <td className="px-6 py-4">
                         <div>
@@ -269,7 +296,11 @@ export default function PayerConnect() {
                               }
                             }
                           }
-                          className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200"
+                          disabled={payer.certificates_verified_count != 2 }
+                          className={`inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md ${payer.certificates_verified_count != 2
+                            ? 'text-gray-400 bg-gray-100 cursor-not-allowed'
+                            : 'text-indigo-700 bg-indigo-100 hover:bg-indigo-200'
+                          }`}
                         >
                         Connect                        
                         </button>

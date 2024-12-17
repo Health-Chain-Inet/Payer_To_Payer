@@ -12,7 +12,7 @@ interface StatBoxProps {
 
 const StatBox = ({ title, icon, stats, lastUpdated }: StatBoxProps) => (   
   <div className="bg-white p-4 rounded-lg shadow-sm border">
-    <div className="flex items-center justify-between mb-4">
+    <div className="flex items-center justify-between mb-6">
       <h2 className="text-lg font-semibold">{title}</h2>
       <div className="text-blue-500">{icon}</div>
     </div>
@@ -123,7 +123,7 @@ const Dashboard = () => {
       </div>
 
       {/* Rest of the dashboard remains the same */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6 ">
         <StatBox
           title="Payer List"
           icon={

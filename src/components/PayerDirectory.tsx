@@ -17,6 +17,7 @@ interface Payer {
   payer_addr2: string;
   certificate_uploaded: boolean;
   certificate_verified: boolean;
+  
 }
 
 interface PayerDirectoryState {
@@ -26,6 +27,8 @@ interface PayerDirectoryState {
   selectedPayer: Payer | null;
   isLoading: boolean;
   error: string | null;
+  currentPage: number;  // New: Track current page
+  pageSize: number;     // New: Items per page
 }
 
 const INITIAL_STATE: PayerDirectoryState = {
@@ -34,7 +37,9 @@ const INITIAL_STATE: PayerDirectoryState = {
   showAdminModal: false,
   selectedPayer: null,
   isLoading: true,
-  error: null
+  error: null, 
+  currentPage: 1,    // Start at first page
+  pageSize: 10       // Show 10 items per page
 };
 
 export default function PayerDirectory() {
@@ -42,10 +47,14 @@ export default function PayerDirectory() {
   const navigate = useNavigate();
   const [state, setState] = useState<PayerDirectoryState>(INITIAL_STATE);
 
+  
+
+
   // Memoized search filter
   const filteredPayers = useMemo(() => {
     const searchLower = state.searchTerm.toLowerCase();
     return state.payers.filter(p => {
+
       return (
         p.payer_name.toLowerCase().includes(searchLower) ||
         p.adm_email.toLowerCase().includes(searchLower) ||
@@ -54,6 +63,22 @@ export default function PayerDirectory() {
       );
     });
   }, [state.payers, state.searchTerm]);
+
+
+  
+    // New : Calculate paginated data
+    const paginatedPayers = useMemo(() => {
+      const startIndex = (state.currentPage - 1) * state.pageSize;
+      const endIndex = startIndex + state.pageSize;
+      return filteredPayers.slice(startIndex, endIndex);
+    }, [filteredPayers, state.currentPage, state.pageSize]);
+  
+    // New: Calculate total pages
+    const totalPages = useMemo(() =>
+      Math.ceil(filteredPayers.length / state.pageSize),
+      [filteredPayers.length, state.pageSize]
+    );
+  
 
   // Memoized fetch function
   const fetchPayers = useCallback(async () => {
@@ -87,7 +112,12 @@ export default function PayerDirectory() {
     }
   }, []);
 
-  // Auth check and initial data fetch
+
+     // New: Handle page change
+  const handlePageChange = (newPage: number) => {
+    setState(prev => ({ ...prev, currentPage: newPage }));
+  };
+
   useEffect(() => {
     const user = localStorage.getItem('user');
     const email = localStorage.getItem('email');
@@ -99,6 +129,9 @@ export default function PayerDirectory() {
 
     fetchPayers();
   }, [navigate, fetchPayers]);
+  
+
+
 
   // Loading state
   if (state.isLoading) {
@@ -155,9 +188,9 @@ export default function PayerDirectory() {
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <Search className="h-5 w-5 text-gray-400" />
               </div>
-              <input
+              <input  
                 type="text"
-                className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md"
+                className="block w-full pl-10 pr-3 py-2 text-sm border-b border-gray-300 focus:border-indigo-500 focus:outline-none transition duration-150 ease-in-out"
                 placeholder="Search by payer name, email, or address..."
                 value={state.searchTerm}
                 onChange={(e) => setState(prev => ({ ...prev, searchTerm: e.target.value }))}
@@ -170,18 +203,18 @@ export default function PayerDirectory() {
         <div className="border-t border-gray-200">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+              <thead className="bg-blue-100 ">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-white-500 uppercase tracking-wider">
                     Payer Name
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-white-500 uppercase tracking-wider">
                     Payer Address
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-white-500 uppercase tracking-wider">
                     Certificate Status
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-white-500 uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
@@ -242,8 +275,72 @@ export default function PayerDirectory() {
               </tbody>
             </table>
           </div>
+{/* New : Pagination Controls */}
+{filteredPayers.length > 0 && (
+            <div className="mt-8 flex justify-center items-center space-x-2">
+              <button
+                onClick={() => setState(prev => ({ ...prev, currentPage: prev.currentPage - 1 }))}
+                disabled={state.currentPage === 1}
+                className={`
+        px-4 py-2 rounded-md text-sm font-medium
+        ${state.currentPage === 1
+                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                    : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'}
+      `}
+              >
+                Previous
+              </button>
+
+              <div className="flex items-center space-x-2">
+                {[...Array(totalPages)].map((_, index) => {
+                  if (
+                    index < 3 ||
+                    index === state.currentPage - 1 ||
+                    index > totalPages - 4
+                  ) {
+                    return (
+                      <button
+                        key={index + 1}
+                        onClick={() => setState(prev => ({ ...prev, currentPage: index + 1 }))}
+                        className={`
+                w-10 h-10 rounded-md text-sm font-medium transition-colors duration-200
+                ${state.currentPage === index + 1
+                            ? 'bg-blue-500 text-white'
+                            : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'}
+              `}
+                      >
+                        {index + 1}
+                      </button>
+                    );
+                  } else if (index === 3 || index === totalPages - 4) {
+                    return <span key={index}>...</span>;
+                  }
+                  return null;
+                })}
+              </div>
+
+              <button
+                onClick={() => setState(prev => ({ ...prev, currentPage: prev.currentPage + 1 }))}
+                disabled={state.currentPage === totalPages}
+                className={`
+        px-4 py-2 rounded-md text-sm font-medium
+        ${state.currentPage === totalPages
+                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                    : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'}
+      `}
+              >
+                Next
+              </button>
+            </div>
+                 )}
+          {/* New : Pagination Controls */}
+                 
         </div>
+
+
       </div>
+
+      
 
       <AdminModal
         isOpen={state.showAdminModal}

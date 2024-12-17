@@ -33,9 +33,19 @@ export default function CertificateUpload({ onUpload }: CertificateUploadProps) 
   const [payerDetails, setPayerDetails] = React.useState<PayerDetails | null>([]);
   const [isLoading, setIsLoading] = React.useState(false);
   // Check for verification status
-  const areAllVerified = payerDetails && Array.isArray(payerDetails) && payerDetails.length > 0
-  ? payerDetails.every(cert => cert.certificate_verified)
+  const areAllVerified = payerDetails && Array.isArray(payerDetails) && payerDetails.length > 1
+  ? true
   : false;
+
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const itemsPerPage = 5;
+
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = Array.isArray(payerDetails)
+      ? payerDetails.slice(indexOfFirstItem, indexOfLastItem)
+      : [];
+    const totalPages = Math.ceil((payerDetails?.length || 0) / itemsPerPage);
 
  
 
@@ -369,7 +379,7 @@ export default function CertificateUpload({ onUpload }: CertificateUploadProps) 
  
     <div className="flex-grow overflow-x-auto bg-gray-50 rounded-lg">
       <table className="min-w-full">
-        <thead>
+        <thead className='bg-blue-100'>
           <tr>
             <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Payer Name</th>
             {/* <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Admin Name</th> */}
@@ -377,6 +387,7 @@ export default function CertificateUpload({ onUpload }: CertificateUploadProps) 
             <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Certificate Status</th>
             <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Valid From</th>
             <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Valid Until</th>
+            <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Actions</th>
           </tr>
         </thead>
 
@@ -408,7 +419,7 @@ export default function CertificateUpload({ onUpload }: CertificateUploadProps) 
                 {formatDate(p.validity_notafter) || 'No data'}
               </td>
 
-              <td className="flex gap-2 items-center">
+              <td className="flex gap-2 items-center p-2 m-2">
                 <button disabled={ p.certificate_verified }    
                  title="Verify" onClick={() => verifyCertificate(p.payer_id, p.cert_type)} className="flex justify-center py-1 px-1 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:bg-red-400">
                   <CheckCircle className="h-4 w-4 mr-1" />
@@ -428,9 +439,69 @@ export default function CertificateUpload({ onUpload }: CertificateUploadProps) 
       </table>
     </div>
 
+    
+
 
 
   </div>
+
+         {/* Pagination Controls */}
+         <div className="mt-8 flex justify-center items-center space-x-2">
+            <button
+              onClick={() => setCurrentPage(currentPage - 1)}
+              disabled={currentPage === 1}
+              className={`
+                px-4 py-2 rounded-md text-sm font-medium
+                ${currentPage === 1
+                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                  : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'}
+              `}
+            >
+              Previous
+            </button>
+
+            <div className="flex items-center space-x-2">
+              {[...Array(totalPages)].map((_, index) => {
+                if (
+                  index < 3 ||
+                  index === currentPage - 1 ||
+                  index > totalPages - 4
+                ) {
+                  return (
+                    <button
+                      key={index + 1}
+                      onClick={() => setCurrentPage(index + 1)}
+                      className={`
+                        w-10 h-10 rounded-md text-sm font-medium transition-colors duration-200
+                        ${currentPage === index + 1
+                          ? 'bg-blue-500 text-white'
+                          : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'}
+                      `}
+                    >
+                      {index + 1}
+                    </button>
+                  );
+                } else if (index === 3 || index === totalPages - 4) {
+                  return <span key={index}>...</span>;
+                }
+                return null;
+              })}
+            </div>
+
+            <button
+              onClick={() => setCurrentPage(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className={`
+                px-4 py-2 rounded-md text-sm font-medium
+                ${currentPage === totalPages
+                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                  : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'}
+              `}
+            >
+              Next
+            </button>
+          </div>
+  
 </div>
 
 
