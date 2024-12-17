@@ -32,6 +32,12 @@ export default function CertificateUpload({ onUpload }: CertificateUploadProps) 
   const [certmsg, setcertmsg] =  React.useState('')
   const [payerDetails, setPayerDetails] = React.useState<PayerDetails | null>([]);
   const [isLoading, setIsLoading] = React.useState(false);
+  // Check for verification status
+  const areAllVerified = payerDetails && Array.isArray(payerDetails) && payerDetails.length > 0
+  ? payerDetails.every(cert => cert.certificate_verified)
+  : false;
+
+ 
 
 
   const fetchPayerDetails = async () => {
@@ -268,7 +274,12 @@ export default function CertificateUpload({ onUpload }: CertificateUploadProps) 
           type="button"
           value="Generate Certificate"
           onClick={generateCertificate}
-          className={`h-10 px-5 m-2 text-indigo-100 transition-colors duration-150 bg-indigo-700 rounded-lg focus:shadow-outline hover:bg-indigo-800` }>
+          disabled={areAllVerified}
+          className={`h-10 px-5 m-2 text-indigo-100 transition-colors duration-150 ${
+            areAllVerified 
+            ? 'bg-gray-400 cursor-not-allowed' 
+            : 'bg-indigo-700 hover:bg-indigo-800'
+          } rounded-lg focus:shadow-outline`}          >
           Generate Certificate
         </button>
         </div>
@@ -387,6 +398,7 @@ export default function CertificateUpload({ onUpload }: CertificateUploadProps) 
               <td className="px-6 py-4 whitespace-nowrap">
                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                   {p.certificate_verified ? 'Verified' : 'Not Verified'}
+        
                 </span>
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
@@ -397,7 +409,7 @@ export default function CertificateUpload({ onUpload }: CertificateUploadProps) 
               </td>
 
               <td className="flex gap-2 items-center">
-                <button disabled={p.certificate_verified }    
+                <button disabled={ p.certificate_verified }    
                  title="Verify" onClick={() => verifyCertificate(p.payer_id, p.cert_type)} className="flex justify-center py-1 px-1 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:bg-red-400">
                   <CheckCircle className="h-4 w-4 mr-1" />
                   {/* Verify <br /> Certificate */}
