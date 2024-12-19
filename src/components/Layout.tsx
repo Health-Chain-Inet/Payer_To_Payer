@@ -30,13 +30,16 @@ export default function Layout() {
     { name: 'Payer Connect', href: '/payerconnect', icon: Network },
     { name: 'Payer Approvals', href: '/payerapprovals', icon: Check },
     { name: 'Certificate Management', href: '/certificates', icon: Shield },
-    { name: 'Certificate Validation', href: '/validate', icon: CheckSquare },
+
+  ];
+  /*
+      { name: 'Certificate Validation', href: '/validate', icon: CheckSquare },
     { name: 'Active Connections', href: '/connections', icon: Network },
     { name: 'Trust Framework', href: '/trust-framework', icon: Lock },
     { name: 'Attestation', href: '/attestation', icon: FileText },
     { name: 'Bulk Data Exchange', href: '/bulk-data', icon: Upload },
     { name: 'Settings', href: '/settings', icon: Settings },
-  ];
+  */ 
 
   const handleLogout = () => {
     localStorage.removeItem('email');
@@ -63,7 +66,7 @@ export default function Layout() {
             <div className="flex items-center">
               <div className="flex-shrink-0">
                 <span className="text-sm text-gray-500 mr-4">
-                  User: {localStorage.getItem('user')} 
+                  <i className="fa-solid fa-user"></i>{localStorage.getItem('user')} 
                 </span>
 
 
