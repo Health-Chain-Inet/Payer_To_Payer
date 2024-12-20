@@ -140,7 +140,11 @@ const CreateClientCertificate: React.FC<CreateClientCertificateProps> = ({ priva
                 body: JSON.stringify(postdata)
             });
             const data = await response.json();
-            if(data.status == 200) {setcertmsg('Generated Client Certificate')} else { setcertmsg('Error: Certificate Not generated')}
+            if(data.status == 200) {
+                setcertmsg('getting data..')
+                await fetchPayerDetails();
+                setcertmsg('Generated Client Certificate')
+            } else { setcertmsg('Error: Certificate Not generated')}
             console.log('response', data)
         } catch(err:any) {
             setcertmsg(err.message);
