@@ -26,10 +26,13 @@ export default function Layout() {
 
   const navigation = [
     { name: 'Dashboard', href: '/dashboard', icon: Home },
+    { name: 'Create Client Certificate', href: '/createclient', icon: Upload },
+    { name: 'Publish Server Certificate', href: '/publishserver', icon: Upload },
     { name: 'Payer Directory', href: '/directory', icon: Users },
     { name: 'Payer Connect', href: '/payerconnect', icon: Network },
     { name: 'Payer Approvals', href: '/payerapprovals', icon: Check },
     { name: 'Certificate Management', href: '/certificates', icon: Shield },
+
 
   ];
   /*
