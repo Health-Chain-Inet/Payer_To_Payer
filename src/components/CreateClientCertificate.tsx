@@ -154,8 +154,28 @@ const CreateClientCertificate: React.FC<CreateClientCertificateProps> = ({ priva
 
     };
 
-    const handleDownloadCertificate = () => {
+    const handleDownloadCertificate = (e) => {
+        e.preventDefault();
+        const payer_id = localStorage.getItem('payer_id')
         // Implement certificate download logic
+                // URL of the file to download
+                const url = 'http://localhost:3001/directory/downloadClientCert?payer_id='+payer_id;
+
+                // Create a temporary download link
+                const link = document.createElement('a');
+        
+                // Set the href to the URL where the file is hosted
+                link.href = url;
+        
+                // Set the download attribute with the filename
+                link.download = 'client_Certificate.txt';
+        
+                // Append the link to the body and simulate a click to trigger the download
+                document.body.appendChild(link);
+                link.click();
+        
+                // Remove the link from the DOM after the download is triggered
+                document.body.removeChild(link);
     };
 
 

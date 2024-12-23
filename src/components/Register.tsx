@@ -126,8 +126,7 @@ const RegisterPage1: React.FC = () => {
                                                 message: 'Invalid organization name format'
                                             }
                                         })}
-                                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
-                                    />
+                                        className="mt-1 block w-full border-2 border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 px-3 py-2 outline-none"                                    />
                                     {errors.organization_name && (
                                         <p className="text-red-500 text-sm">{errors.organization_name.message}</p>
                                     )}
@@ -146,8 +145,7 @@ const RegisterPage1: React.FC = () => {
                                                 message: 'Only letters and spaces allowed'
                                             }
                                         })}
-                                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
-                                    />
+                                        className="mt-1 block w-full border-2 border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 px-3 py-2 outline-none"                                    />
                                     {errors.admin_name && (
                                         <p className="text-red-500 text-sm">{errors.admin_name.message}</p>
                                     )}
@@ -165,7 +163,7 @@ const RegisterPage1: React.FC = () => {
                                                 message: 'Enter valid 10-digit phone number'
                                             }
                                         })}
-                                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                                        className="mt-1 block w-full border-2 border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 px-3 py-2 outline-none"
                                     />
                                     {errors.admin_phone && (
                                         <p className="text-red-500 text-sm">{errors.admin_phone.message}</p>
@@ -185,7 +183,7 @@ const RegisterPage1: React.FC = () => {
                                                 message: 'Invalid email address'
                                             }
                                         })}
-                                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                                        className="mt-1 block w-full border-2 border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 px-3 py-2 outline-none"
                                     />
                                     {errors.admin_email && (
                                         <p className="text-red-500 text-sm">{errors.admin_email.message}</p>
@@ -210,7 +208,7 @@ const RegisterPage1: React.FC = () => {
                                                 message: 'Password must contain letter, number, and special character'
                                             }
                                         })}
-                                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                                        className="mt-1 block w-full border-2 border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 px-3 py-2 outline-none"
                                     />
                                     {errors.password && (
                                         <p className="text-red-500 text-sm">{errors.password.message}</p>
@@ -228,7 +226,7 @@ const RegisterPage1: React.FC = () => {
                                             required: 'Please confirm password',
                                             validate: value => value === watch('password') || 'Passwords do not match'
                                         })}
-                                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                                        className="mt-1 block w-full border-2 border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 px-3 py-2 outline-none"
                                     />
                                     {errors.confirm_password && (
                                         <p className="text-red-500 text-sm">{errors.confirm_password.message}</p>
