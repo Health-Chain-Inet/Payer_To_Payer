@@ -214,17 +214,17 @@ const CreateClientCertificate: React.FC<CreateClientCertificateProps> = ({ priva
         <div className="flex flex-col space-y-6">
             <div className="flex justify-between items-center">
                 <h2 className="text-2xl font-semibold text-gray-800">Create Client Certificate</h2>
-                <button
+                {/* <button
                     onClick={handleDownloadCA}
                     className="px-6 py-2 bg-[#4f46e5] text-white rounded-md hover:bg-[#252082] transition-colors duration-200"
                 >
                     Download CA Intermediate Certificate
-                </button>
+                </button> */}
             </div>
             <form onSubmit={handleGenerateCertificate}>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <h3 className="text-lg font-medium text-gray-700 mb-2">Private Key</h3>
+                        <h3 className="text-lg font-medium text-gray-700 mb-2">Private Key (PEM format)</h3>
                         <textarea
                             id="private_key"
                             name="private_key"
@@ -236,7 +236,7 @@ const CreateClientCertificate: React.FC<CreateClientCertificateProps> = ({ priva
                     </div>
 
                     <div>
-                        <h3 className="text-lg font-medium text-gray-700 mb-2">Certificate Signing Request (CSR)</h3>
+                        <h3 className="text-lg font-medium text-gray-700 mb-2">Certificate Signing Request (CSR) (PEM)</h3>
                         <textarea
                             id="csr"
                             name = "csr"

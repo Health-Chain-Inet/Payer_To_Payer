@@ -26,14 +26,11 @@ export default function Layout() {
 
   const navigation = [
     { name: 'Dashboard', href: '/dashboard', icon: Home },
+    { name: 'Payer-Endpoints', href: '/payerendpoints', icon: Check },
     { name: 'Create Client Certificate', href: '/createclient', icon: Upload },
     { name: 'Publish Server Certificate', href: '/publishserver', icon: Upload },
     { name: 'Payer Directory', href: '/directory', icon: Users },
-    { name: 'Payer Connect', href: '/payerconnect', icon: Network },
-    { name: 'Payer Approvals', href: '/payerapprovals', icon: Check },
     { name: 'Certificate Management', href: '/certificates', icon: Shield },
-
-
   ];
   /*
       { name: 'Certificate Validation', href: '/validate', icon: CheckSquare },
@@ -42,6 +39,8 @@ export default function Layout() {
     { name: 'Attestation', href: '/attestation', icon: FileText },
     { name: 'Bulk Data Exchange', href: '/bulk-data', icon: Upload },
     { name: 'Settings', href: '/settings', icon: Settings },
+         { name: 'Payer Connect', href: '/payerconnect', icon: Network },
+    { name: 'Payer Approvals', href: '/payerapprovals', icon: Check },
   */ 
 
   const handleLogout = () => {

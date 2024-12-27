@@ -6,6 +6,7 @@ import PayerConnect from './components/PayerConnect';
 import PayerApprovals from './components/PayerApprovals';
 import CertificateUpload from './components/CertificateUpload';
 import PayerConnection from './components/PayerConnection';
+import PayerEndpoints from './components/PayerEndpoints'
 import CreateClientCertificate from './components/CreateClientCertificate';
 import PublishServerCertificate from './components/PublishServerCertificate';
 import CertificateValidator from './components/CertificateValidator';
@@ -48,6 +49,7 @@ export default function App() {
           <Route index element={<Navigate to="/dashboard" replace />} />
           <Route path="directory" element={<PayerDirectory />} />
           <Route path="dashboard" element={<Dashboard />} />
+          <Route path="payerendpoints" element={<PayerEndpoints />} />
           <Route path="payerconnect" element={<PayerConnect />} />
           <Route path="payerapprovals" element={<PayerApprovals />} />
           <Route path="createclient" element={<CreateClientCertificate privateKey={''} csr={''} />} />
